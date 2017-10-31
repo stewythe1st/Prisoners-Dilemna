@@ -16,9 +16,16 @@ enum seedType{
 struct config {
 
 	std::string	srcfile	= DEFAULT_FILE;
-	int	seed			= 123456789;
-	int	seedType		= SEED_STATIC;
-	std::map<std::string, int*>	defs = { {"seed",&seed},{"seedType",&seedType} };
+	int			seed;
+	int			seedType;
+	int			depth;
+	int			memory;
+	std::map<std::string, int*>	defs = {
+		{"seed", &seed},
+		{"seedType", &seedType},
+		{"d", &depth},
+		{"k", &memory }
+	};
 
 	// Constructors & Destructors
 	inline config() { read(DEFAULT_FILE); };

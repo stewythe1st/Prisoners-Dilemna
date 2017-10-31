@@ -34,13 +34,19 @@ public:
 class gp_tree {
 private:
 	tree<node> controller;
+	int depth;
+	int memory;
+
+	// Private member functions
+	void add_random_children(tree<node>::iterator parent, int children, int depth);
 public:
 	// Constructors, Destructors, Etc.
-	gp_tree() {};
+	gp_tree() { depth = 0; memory = 5; };
+	inline gp_tree(int d, int m) { depth = d; memory = m; };
 	~gp_tree() {};
 
 	// Member Functions
-	void randomize(int depth);
+	void randomize();
 	inline void print(std::ostream& out) { print_tree_bracketed(controller, std::cout); };
 
 	// Accessors & Mutators

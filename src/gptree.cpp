@@ -3,25 +3,53 @@
 #include <string>
 
 
-void gp_tree::randomize(int depth) {
+void gp_tree::randomize() {
+
+	// Sanity check
+	if (depth < 0)
+		return;
 	
 	// Variables
-	tree<node>::iterator a, b, c, d, e;
+	tree<node>::iterator root;
+	int type;
 
-	// Place root node
-	a = controller.insert(controller.begin(), node(false, rand() % NUM_OPERATORS, 0));
+	// Place root node and recursively add child nodes
+	if (depth != 0) {
+		type = rand() % NUM_OPERATORS;
+		root = controller.insert(controller.begin(), node(false, type, 0));
+		add_random_children(root, (type == NOT ? 1 : 2), 1);
+	}
 
-	// Append level 2 nodes
-	b = controller.append_child(a, node(false, rand() % NUM_OPERATORS, 0));
-	c = controller.append_child(a, node(false, rand() % NUM_OPERATORS, 0));
-
-	// Append leve 3 leaf nodes
-	d = controller.append_child(b, node(true, rand() % NUM_AGENTS, 2));
-	e = controller.append_child(b, node(true, rand() % NUM_AGENTS, 2));
-	d = controller.append_child(c, node(true, rand() % NUM_AGENTS, 2));
-	e = controller.append_child(c, node(true, rand() % NUM_AGENTS, 2));
+	// If depth is 0, then just place a single leaf node
+	else {
+		type = rand() % NUM_AGENTS;
+		controller.insert(controller.begin(), node(true, type, (rand() % memory) + 1));
+	}
 
 	return;
+}
+
+
+void gp_tree::add_random_children(tree<node>::iterator parent, int children, int cur_depth) {
+
+	// Variables
+	int type;
+	tree<node>::iterator temp;
+	bool leaf = (cur_depth == depth);
+
+	// Add children (recursively if not a leaf node)
+	for (int i = 0; i < children; i++) {
+		if (!leaf) {
+			type = rand() % NUM_OPERATORS;
+			temp = controller.append_child(parent, node(false, type, 0));
+			add_random_children(temp, (type == NOT ? 1 : 2), cur_depth + 1);
+		}
+		else {
+			type = rand() % NUM_AGENTS;
+			temp = controller.append_child(parent, node(true, type, (rand() % memory) + 1));
+		}
+	}
+	
 }
 
 

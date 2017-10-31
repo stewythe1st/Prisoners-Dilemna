@@ -7,7 +7,6 @@ int main() {
 
 	// Variables
 	config cfg;
-	gp_tree test;
 
 	// Seed random number generator
 	switch (cfg.seedType) {
@@ -22,8 +21,12 @@ int main() {
 	}
 
 	// Testing
-	test.randomize(3);
-	test.print(std::cout);
+	for (int i = 0; i < 10; i++) {
+		gp_tree test(cfg.depth, cfg.memory);
+		test.randomize();
+		test.print(std::cout);
+		std::cout << std::endl;
+	}
 
 	return 0;
 }
