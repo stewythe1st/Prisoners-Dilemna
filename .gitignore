@@ -1,0 +1,25 @@
+# Build files
+*.o
+*.exe
+
+# Visual Studio build directories
+Debug/*
+x64/*
+
+# Other Visual Studio crap
+*.vs
+*.user
+*.filters
+
+# LaTeX files
+doc/*.aux
+doc/*.bbl
+doc/*.blg
+doc/*.log
+doc/*.out
+
+# MATLAB files
+*.asv
+
+# Manual override
+!.gitkeep

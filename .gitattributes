@@ -1,0 +1,10 @@
+# Source (and some other) files will have Unix-style line endings
+*.cpp text eol=lf
+*.h text eol=lf
+*.cfg text eol=lf
+
+# Visual Studio file can retain Windows line ending
+*.sln text eol=crlf
+*.vcxproj* text eol=crlf
+
+# Binary files that we won't mess with
