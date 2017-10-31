@@ -47,7 +47,7 @@ public:
 
 	// Member Functions
 	void randomize();
-	inline void print(std::ostream& out) { print_tree_bracketed(controller, std::cout); };
+	inline void print(std::ostream& out) { print_tree_bracketed(controller, out); };
 
 	// Accessors & Mutators
 	
