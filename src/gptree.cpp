@@ -28,6 +28,14 @@ void gp_tree::randomize() {
 	return;
 }
 
+gp_tree& gp_tree::operator= (const gp_tree& rhs) {
+	controller = rhs.controller;
+	depth = rhs.depth;
+	memory = rhs.memory;
+	payoff = rhs.payoff;
+	rounds_played = rhs.rounds_played;
+	return *this;
+}
 
 void gp_tree::add_random_children(tree<node>::iterator parent, int children, int cur_depth) {
 
@@ -40,20 +48,23 @@ void gp_tree::add_random_children(tree<node>::iterator parent, int children, int
 	for (int i = 0; i < children; i++) {
 		if (!leaf) {
 			type = rand() % NUM_OPERATORS;
-			temp = controller.append_child(parent, node(false, type, 0));
+			temp = controller.append_child(parent, node(leaf, type, 0));
 			add_random_children(temp, (type == NOT ? 1 : 2), cur_depth + 1);
 		}
 		else {
-			type = rand() % NUM_AGENTS;
-			temp = controller.append_child(parent, node(true, type, (rand() % memory) + 1));
+			type = rand() % NUM_CHOICES;
+			temp = controller.append_child(parent, node(leaf, type, (rand() % memory) + 1));
 		}
 	}
 	
 }
 
-bool gp_tree::calc_outcome(tree<node>::iterator x, std::vector<agent>* memory) {
+bool gp_tree::calc_outcome(tree<node>::iterator x, std::vector<outcome>* memory) {
 	if ((*x).leaf) {
-		return (*memory)[(*x).count - 1] == (*x).type;
+		if((*x).type == PLAYER)
+			return (*memory)[(*x).count - 1].player == (bool)(*x).type;
+		else // ((*x).type == OPPONENT)
+			return (*memory)[(*x).count - 1].opponent == (bool)(*x).type;
 	}
 	else {
 		bool a = false;
