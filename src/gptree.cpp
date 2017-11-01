@@ -1,5 +1,4 @@
 #include "gptree.h"
-#include "tree/tree_util.h"
 #include <string>
 
 
@@ -50,6 +49,38 @@ void gp_tree::add_random_children(tree<node>::iterator parent, int children, int
 		}
 	}
 	
+}
+
+bool gp_tree::calc_outcome(tree<node>::iterator x, std::vector<agent>* memory) {
+	if ((*x).leaf) {
+		return (*memory)[(*x).count - 1] == (*x).type;
+	}
+	else {
+		bool a = false;
+		bool b = false;
+		tree<node>::sibling_iterator it = x.begin();
+		a = calc_outcome(it, memory);
+		if ((*x).type != NOT) {
+			it++;
+			b = calc_outcome(it, memory);
+		}
+		return (*x).evaluate(a, b);
+	}
+}
+
+
+bool node::evaluate(bool arg1, bool arg2) {
+	switch (type) {
+	case AND:
+		return arg1 & arg2;
+	case OR:
+		return arg1 | arg2;
+	case XOR:
+		return arg1 ^ arg2;
+	case NOT:
+		return !arg1;
+	}
+	return false;
 }
 
 

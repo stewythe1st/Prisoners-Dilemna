@@ -113,11 +113,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\game.cpp" />
     <ClCompile Include="src\gptree.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClInclude Include="src\config.h" />
     <ClCompile Include="src\config.cpp" />
     <ClInclude Include="cfg\default.cfg" />
+    <ClInclude Include="src\game.h" />
     <ClInclude Include="src\gptree.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

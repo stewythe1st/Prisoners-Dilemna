@@ -1,4 +1,5 @@
 #include "config.h"
+#include "game.h"
 #include "gptree.h"
 #include <chrono>
 #include <iostream>
@@ -7,6 +8,7 @@ int main() {
 
 	// Variables
 	config cfg;
+	game g;
 
 	// Seed random number generator
 	switch (cfg.seedType) {
@@ -21,12 +23,14 @@ int main() {
 	}
 
 	// Testing
-	for (int i = 0; i < 10; i++) {
-		gp_tree test(cfg.depth, cfg.memory);
-		test.randomize();
-		test.print(std::cout);
-		std::cout << std::endl;
-	}
+	gp_tree test(cfg.depth, cfg.memory);
+	test.randomize();
+	test.print(std::cout);
+	std::cout << std::endl;
+	
+	g.set_player(&test);
+	g.set_opponent(&test);
+	g.play_round();
 
 	return 0;
 }

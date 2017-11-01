@@ -4,6 +4,7 @@
 #include "tree/tree.h"
 #include "tree/tree_util.h"
 #include <iostream>
+#include <vector>
 
 enum operators {
 	AND,
@@ -20,13 +21,13 @@ enum agent {
 };
 
 class node {
-private:
+public:
 	bool	leaf;
 	int		type;
 	int		count;
-public:
 	inline node() { leaf = 0, type = 0; count = 0; };
 	inline node(bool l, int t, int c) { leaf = l; type = t; count = c; };
+	bool evaluate(bool arg1, bool arg2);
 	friend std::ostream& operator<<(std::ostream& out, const node& n);
 };
 
@@ -47,6 +48,8 @@ public:
 
 	// Member Functions
 	void randomize();
+	inline bool calc_outcome(std::vector<agent>* memory) { return calc_outcome(controller.begin(), memory); };
+	bool calc_outcome(tree<node>::iterator x, std::vector<agent>* memory);
 	inline void print(std::ostream& out) { print_tree_bracketed(controller, out); };
 
 	// Accessors & Mutators
