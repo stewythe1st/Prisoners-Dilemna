@@ -1,20 +1,41 @@
+/******************************************************************************
+*	main.cpp
+*
+*	Main function for the config class for the Iterated Prisoner's Dilemna Problem
+*
+*	Stuart Miller
+*	Missouri S&T CS 5401
+*	Fall 2017
+******************************************************************************/
+
+
+/**********************************************************
+*	Headers
+**********************************************************/
 #include "config.h"
 #include "game.h"
-#include "gptree.h"
 #include <chrono>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 
+
+/**********************************************************
+*	Compiler Constants
+**********************************************************/
 #define IO_FORMAT_FLOAT(x)	std::fixed << std::setprecision(x) << std::setfill('0')
 
+
+/**********************************************************
+*	Main Function
+**********************************************************/
 int main() {
 
 	// Variables
 	config cfg;
 	game g;
-	gp_tree* temp;
-	gp_tree local_best, global_best;
+	agent* temp;
+	agent local_best, global_best;
 	std::ofstream log;
 
 	// Seed random number generator
@@ -38,10 +59,10 @@ int main() {
 	log << "Result Log" << std::endl;
 
 	// Create random player and opponent
-	temp = new gp_tree(cfg.depth, cfg.memory);
+	temp = new agent(cfg.depth, cfg.memory);
 	temp->randomize();
 	g.set_player(temp);
-	temp = new gp_tree(cfg.depth, cfg.memory);
+	temp = new agent(cfg.depth, cfg.memory);
 	temp->randomize();
 	g.set_opponent(temp);
 
@@ -64,7 +85,7 @@ int main() {
 		// Play tit-for-tat (i.e. current player becomes next opponent, then generate a new random player)
 		delete g.get_opponent();
 		g.set_opponent(g.get_player());
-		temp = new gp_tree(cfg.depth, cfg.memory);
+		temp = new agent(cfg.depth, cfg.memory);
 		temp->randomize();
 		g.set_player(temp);		
 	}

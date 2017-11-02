@@ -1,8 +1,29 @@
+/******************************************************************************
+*	config.cpp
+*
+*	Definitions for the config class for the Iterated Prisoner's Dilemna Problem
+*
+*	Stuart Miller
+*	Missouri S&T CS 5401
+*	Fall 2017
+******************************************************************************/
 
+
+/**********************************************************
+*	Headers
+**********************************************************/
 #include "config.h"
 #include <fstream>
 
 
+/**********************************************************
+*	config::read()
+*	Reads in a configuration from the passed filename.
+*	Expects file to be in th CFG_PATH directory and to be
+*	in the form of "token=value". Any line starting with 
+*	a COMMENT_CHAR will be ignored.
+*	 @param filename name of the file to be read
+**********************************************************/
 bool config::read(std::string filename) {
 
 	// Variables
