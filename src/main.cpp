@@ -61,6 +61,7 @@ int main(int argc, char *argv[]) {
 	log << "Result Log" << std::endl;
 	log << "\tAgent memory k = " << cfg.memory << std::endl;
 	log << "\tMax tree depth d = " << cfg.depth << std::endl;
+	log << "\tSeed s = " << cfg.seed << std::endl;
 
 	// Run rounds
 	for (int run = 0; run < cfg.runs; run++) {
