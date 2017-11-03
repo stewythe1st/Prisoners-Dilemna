@@ -64,6 +64,7 @@ int main(int argc, char *argv[]) {
 	log << "\tSeed s = " << cfg.seed << std::endl;
 
 	// Run rounds
+	g.set_memory(cfg.memory);
 	for (int run = 0; run < cfg.runs; run++) {
 
 		log << std::endl << "Run: " << run << std::endl;

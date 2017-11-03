@@ -120,14 +120,15 @@ private:
 public:
 
 	// Constructors, Destructors, Etc.
-	game();
-	game(int m);
+	game() { set_memory(memory_sz); };
+	game(int m) { set_memory(m); };
 	~game() {};
 
 	// Member Functions
 	void play_round_tit_for_tat();
 
 	// Accessors & Mutators
+	void set_memory(int m);
 	inline void set_player(agent* p) { player = p; };
 	inline void set_opponent(agent* o) { opponent = o; };
 	inline agent* get_player() { return player; };

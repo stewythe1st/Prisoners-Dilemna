@@ -231,24 +231,12 @@ void agent::print(std::ostream& out) {
 
 
 /**********************************************************
-*	game::game()
-*	Default constructor for the game class. Simply fills
-*	the memory structure.
-**********************************************************/
-game::game() {
-	for (int i = 0; i < memory_sz; i++) {
-		outcome temp = { (bool)(rand() % 2), (bool)(rand() % 2) };
-		memory.push_back(temp);
-	}
-}
-
-
-/**********************************************************
-*	game::game()
+*	game::set_memory()
 *	Custom constructor for the game class. Overrides the 
 *	default memory length, then fills the memory structure.
 **********************************************************/
-game::game(int m) {
+void game::set_memory(int m) {
+	memory.clear();
 	memory_sz = m;
 	for (int i = 0; i < memory_sz; i++) {
 		outcome temp = { (bool)(rand() % 2), (bool)(rand() % 2) };
