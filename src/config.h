@@ -22,8 +22,7 @@
 *	Compiler Constants
 **********************************************************/
 #define COMMENT_CHAR		('#')
-#define DEFAULT_FILE		("default.cfg")
-#define CFG_PATH			("./cfg/")
+#define DEFAULT_FILE		("./cfg/default.cfg")
 
 
 /**********************************************************

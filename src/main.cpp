@@ -37,18 +37,14 @@ int main() {
 	agent* temp;
 	agent local_best, global_best;
 	std::ofstream log;
+	std::ofstream solution;
 
 	// Seed random number generator
-	switch (cfg.seedType) {
-	case SEED_TIME_BASED: {
-			std::chrono::time_point<std::chrono::system_clock, std::chrono::microseconds> time = std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()); // Good lord, <chrono> types are awful aren't they??
-			srand((unsigned int)time.time_since_epoch().count());
-		}
-		break;
-	case SEED_STATIC:
-		srand(cfg.seed);
-		break;
+	if (cfg.seedType == SEED_TIME_BASED) {
+		std::chrono::time_point<std::chrono::system_clock, std::chrono::microseconds> time = std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()); // Good lord, <chrono> types are awful aren't they??
+		cfg.seed = (unsigned int)time.time_since_epoch().count();
 	}
+	srand(cfg.seed);
 
 	// Open log file
 	log.open("./log/default.txt");
@@ -68,39 +64,36 @@ int main() {
 		temp = new agent(cfg.depth, cfg.memory);
 		temp->randomize();
 		g.set_player(temp);
-		temp = new agent(cfg.depth, cfg.memory);
-		temp->randomize();
-		g.set_opponent(temp);
 
 		// Run iterations
 		for (int iteration = 0; iteration < cfg.iterations; iteration++) {
 
-			g.play_round();
+			g.play_round_tit_for_tat();
 
 			// Check for best fitness
-			if (g.get_player()->get_fitness() > g.get_opponent()->get_fitness())
+			if ((g.get_player()->get_fitness() > local_best.get_fitness()) || iteration == 0) {
 				local_best = *g.get_player();
-			else
-				local_best = *g.get_opponent();
-			if (local_best.get_fitness() > global_best.get_fitness() || iteration == 0) {
-				global_best = local_best;
-				log << iteration + 1 << "\t" << IO_FORMAT_FLOAT(2) << global_best.get_fitness() << std::endl;
-				std::cout << iteration + 1 << "\t" << IO_FORMAT_FLOAT(2) << global_best.get_fitness() << std::endl;
+				log << iteration + 1 << "\t" << IO_FORMAT_FLOAT(4) << local_best.get_fitness() << std::endl;
+				std::cout << iteration + 1 << "\t" << IO_FORMAT_FLOAT(4) << local_best.get_fitness() << std::endl;
 			}
+		}
 
-			// Play tit-for-tat (i.e. current player becomes next opponent, then generate a new random player)
-			delete g.get_opponent();
-			g.set_opponent(g.get_player());
-			temp = new agent(cfg.depth, cfg.memory);
-			temp->randomize();
-			g.set_player(temp);
+		// Check for global best
+		if ((local_best.get_fitness() > global_best.get_fitness()) || run == 0) {
+			global_best = local_best;
 		}
 
 		// Clean up
 		delete g.get_player();
-		delete g.get_opponent();
-
 	}
+
+	// Print global best to solution file
+	solution.open(cfg.solutionfile);
+	if (!solution.is_open()) {
+		std::cout << "Error: Unable to write solution file" << std::endl;
+		exit(1);
+	}
+	global_best.print(solution);
 
 	return 0;
 }

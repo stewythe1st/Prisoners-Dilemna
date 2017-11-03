@@ -25,6 +25,28 @@
 
 
 /**********************************************************
+*	node::evaluate()
+*	Evalute this node's boolean equation.
+*	 @param arg1 first argument to evaluate
+*	 @param arg2 second argument to evaluate
+*	 @return boolean result
+**********************************************************/
+bool node::evaluate(bool arg1, bool arg2) {
+	switch (type) {
+	case AND:
+		return arg1 & arg2;
+	case OR:
+		return arg1 | arg2;
+	case XOR:
+		return arg1 ^ arg2;
+	case NOT:
+		return !arg1;
+	}
+	return false;
+}
+
+
+/**********************************************************
 *	(friend node::)operator<<
 *	Outputs the node to the passed output stream.
 *	 @param out the output stream to print to
@@ -188,24 +210,16 @@ bool agent::calc_outcome(tree<node>::iterator x, std::vector<outcome>* memory) {
 
 
 /**********************************************************
-*	agent::evaluate()
-*	Evalute this node's boolean equation.
-*	 @param arg1 first argument to evaluate
-*	 @param arg2 second argument to evaluate
-*	 @return boolean result
+*	agent::print()
+*	Prints the agent's tree in pre-order format to the passed
+*	output stream.
+*	 @param out the output stream to print to
+*	 @return the calling output stream (for chaining)
 **********************************************************/
-bool node::evaluate(bool arg1, bool arg2) {
-	switch (type) {
-	case AND:
-		return arg1 & arg2;
-	case OR:
-		return arg1 | arg2;
-	case XOR:
-		return arg1 ^ arg2;
-	case NOT:
-		return !arg1;
+void agent::print(std::ostream& out) {
+	for (tree<node>::pre_order_iterator it = gp_tree.begin(); it != gp_tree.end(); it++) {
+		out << (*it) << " ";
 	}
-	return false;
 }
 
 
@@ -248,33 +262,28 @@ game::game(int m) {
 *	Plays a round of the game by determining each player's
 *	outcome and then updating their accumulated payoffs.
 **********************************************************/
-void game::play_round() {
+void game::play_round_tit_for_tat() {
 
 	// Variables
-	bool player_choice;
-	bool opponent_choice;
+	outcome out;
 
 	// Get agent outcomes
-	player_choice = player->calc_outcome(&memory);
-	opponent_choice = opponent->calc_outcome(&memory);
+	out.player = player->calc_outcome(&memory);
+	out.opponent = memory[0].player;
 
-	// Assign payoffs
-	if (player_choice == DEFECT && opponent_choice == DEFECT) {
+	// Update payoff total
+	if (out.player == DEFECT && out.opponent == DEFECT)
 		player->add_payoff(5 - 4);
-		opponent->add_payoff(5 - 4);
-	}
-	else if (player_choice == DEFECT && opponent_choice == COOPERATE) {
+	else if (out.player == DEFECT && out.opponent == COOPERATE)
 		player->add_payoff(5 - 0);
-		opponent->add_payoff(5 - 5);
-	}
-	else if (player_choice == COOPERATE && opponent_choice == DEFECT) {
+	else if (out.player == COOPERATE && out.opponent == DEFECT)
 		player->add_payoff(5 - 5);
-		opponent->add_payoff(5 - 0);
-	}
-	else if (player_choice == COOPERATE && opponent_choice == COOPERATE) {
+	else if (out.player == COOPERATE && out.opponent == COOPERATE)
 		player->add_payoff(5 - 2);
-		opponent->add_payoff(5 - 2);
-	}
+
+	// Update memory
+	memory.insert(memory.begin(), out);
+	memory.pop_back();
 
 	return;
 }

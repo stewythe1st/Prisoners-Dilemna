@@ -23,6 +23,7 @@ doc/*.out
 
 # Per-run output directories
 log/*
+sln/*
 
 # Manual override
 !.gitkeep

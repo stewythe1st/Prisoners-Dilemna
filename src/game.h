@@ -93,7 +93,8 @@ public:
 	void randomize();
 	inline bool calc_outcome(std::vector<outcome>* memory) { return calc_outcome(gp_tree.begin(), memory); };
 	bool calc_outcome(tree<node>::iterator x, std::vector<outcome>* memory);
-	inline void print(std::ostream& out) { print_tree_bracketed(gp_tree, out); };
+	inline void quick_print(std::ostream& out) { print_tree_bracketed(gp_tree, out); };
+	void print(std::ostream& out);
 
 	// Accessors & Mutators
 	inline void add_payoff(int p) { payoff += p; rounds_played++; };
@@ -109,11 +110,12 @@ class game {
 
 private:
 
-	std::vector<outcome>memory;
-	agent*			player;
-	agent*			opponent;
-	int					memory_sz = 5;
-	int					round = 1;
+	std::vector<outcome>
+				memory;
+	agent*		player;
+	agent*		opponent;
+	int			memory_sz = 5;
+	int			round = 1;
 
 public:
 
@@ -123,7 +125,7 @@ public:
 	~game() {};
 
 	// Member Functions
-	void play_round();
+	void play_round_tit_for_tat();
 
 	// Accessors & Mutators
 	inline void set_player(agent* p) { player = p; };

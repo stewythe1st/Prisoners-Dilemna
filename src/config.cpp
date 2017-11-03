@@ -37,7 +37,7 @@ bool config::read(std::string filename) {
 
 	// Open file
 	srcfile = filename;
-	in.open(CFG_PATH + filename);
+	in.open(filename);
 	if (!in.is_open()) {
 		return false;
 	}
