@@ -29,16 +29,22 @@
 /**********************************************************
 *	Main Function
 **********************************************************/
-int main() {
+int main(int argc, char *argv[]) {
 
 	// Variables
-	config cfg;
-	game g;
-	agent* temp;
-	agent local_best, global_best;
-	std::ofstream log;
-	std::ofstream solution;
+	config			cfg;
+	game			g;
+	agent*			temp;
+	agent			local_best;
+	agent			global_best;
+	std::ofstream	log;
+	std::ofstream	solution;
 
+	// Get configuration
+	if (argc > 1) {
+		cfg.read(argv[1]);
+	}
+	
 	// Seed random number generator
 	if (cfg.seedType == SEED_TIME_BASED) {
 		std::chrono::time_point<std::chrono::system_clock, std::chrono::microseconds> time = std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()); // Good lord, <chrono> types are awful aren't they??
