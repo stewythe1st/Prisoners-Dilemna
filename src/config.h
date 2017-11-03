@@ -34,6 +34,16 @@ enum seedType{
 	SEED_TIME_BASED
 };
 
+enum dataType {
+	INT,
+	STRING
+};
+
+struct cfg_value {
+	void* address;
+	dataType type;
+};
+
 
 /**********************************************************
 *	Config Class
@@ -43,14 +53,22 @@ struct config {
 	std::string	srcfile	= DEFAULT_FILE;
 	int			seed;
 	int			seedType;
+	int			iterations;
 	int			depth;
 	int			memory;
+	int			runs;
+	std::string	logfile;
+	std::string	solutionfile;
 
-	std::map<std::string, int*>	defs = {
-		{"seed", &seed},
-		{"seedType", &seedType},
-		{"d", &depth},
-		{"k", &memory }
+	std::map<std::string, cfg_value> defs = {
+		{ "seed", cfg_value{ &seed, INT } },
+		{ "seedType", cfg_value{ &seedType, INT } },
+		{ "l", cfg_value{ &iterations, INT } },
+		{ "d", cfg_value{ &depth, INT } },
+		{ "k", cfg_value{ &memory, INT } },
+		{ "runs", cfg_value{ &runs, INT } },
+		{ "logfile", cfg_value{ &logfile, STRING } },
+		{ "solutionfile", cfg_value{ &solutionfile, STRING } }
 	};
 
 	// Constructors & Destructors

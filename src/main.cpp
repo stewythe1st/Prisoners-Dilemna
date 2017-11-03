@@ -58,41 +58,49 @@ int main() {
 	}
 	log << "Result Log" << std::endl;
 
-	// Create random player and opponent
-	temp = new agent(cfg.depth, cfg.memory);
-	temp->randomize();
-	g.set_player(temp);
-	temp = new agent(cfg.depth, cfg.memory);
-	temp->randomize();
-	g.set_opponent(temp);
+	// Run rounds
+	for (int run = 0; run < cfg.runs; run++) {
 
-	// Run for 100 rounds
-	for (int i = 0; i < 1000; i++) {
+		log << std::endl << "Run: " << run << std::endl;
+		std::cout << std::endl << "Run: " << run << std::endl;
 
-		g.play_round();		
-
-		// Check for best fitness
-		if (g.get_player()->get_fitness() > g.get_opponent()->get_fitness())
-			local_best = *g.get_player();
-		else
-			local_best = *g.get_opponent();
-		if (local_best.get_fitness() > global_best.get_fitness() || i == 0) {
-			global_best = local_best;
-			log << i + 1 << "\t" << IO_FORMAT_FLOAT(2) << global_best.get_fitness() << std::endl;
-			std::cout << i + 1 << "\t" << IO_FORMAT_FLOAT(2) << global_best.get_fitness() << std::endl;
-		}
-
-		// Play tit-for-tat (i.e. current player becomes next opponent, then generate a new random player)
-		delete g.get_opponent();
-		g.set_opponent(g.get_player());
+		// Create random player and opponent
 		temp = new agent(cfg.depth, cfg.memory);
 		temp->randomize();
-		g.set_player(temp);		
-	}
+		g.set_player(temp);
+		temp = new agent(cfg.depth, cfg.memory);
+		temp->randomize();
+		g.set_opponent(temp);
 
-	// Clean up
-	delete g.get_player();
-	delete g.get_opponent();
+		// Run iterations
+		for (int iteration = 0; iteration < cfg.iterations; iteration++) {
+
+			g.play_round();
+
+			// Check for best fitness
+			if (g.get_player()->get_fitness() > g.get_opponent()->get_fitness())
+				local_best = *g.get_player();
+			else
+				local_best = *g.get_opponent();
+			if (local_best.get_fitness() > global_best.get_fitness() || iteration == 0) {
+				global_best = local_best;
+				log << iteration + 1 << "\t" << IO_FORMAT_FLOAT(2) << global_best.get_fitness() << std::endl;
+				std::cout << iteration + 1 << "\t" << IO_FORMAT_FLOAT(2) << global_best.get_fitness() << std::endl;
+			}
+
+			// Play tit-for-tat (i.e. current player becomes next opponent, then generate a new random player)
+			delete g.get_opponent();
+			g.set_opponent(g.get_player());
+			temp = new agent(cfg.depth, cfg.memory);
+			temp->randomize();
+			g.set_player(temp);
+		}
+
+		// Clean up
+		delete g.get_player();
+		delete g.get_opponent();
+
+	}
 
 	return 0;
 }
