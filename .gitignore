@@ -22,8 +22,8 @@ x64/*
 *.asv
 
 # Per-run output directories
-#log/*
-#sln/*
+log/*
+sln/*
 
 # Manual override
 !.gitkeep
