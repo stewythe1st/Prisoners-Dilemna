@@ -92,6 +92,7 @@ public:
 
 	// Member Functions
 	void randomize();
+	void mutate(int max_depth);
 	inline bool calc_outcome(std::vector<outcome>* memory) { return calc_outcome(gp_tree.begin(), memory); };
 	bool calc_outcome(tree<node>::iterator x, std::vector<outcome>* memory);
 	inline void quick_print(std::ostream& out) { print_tree_bracketed(gp_tree, out); };

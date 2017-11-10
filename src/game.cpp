@@ -167,6 +167,38 @@ void agent::randomize() {
 
 
 /**********************************************************
+*	agent::mutate()
+*	Mutation operator. Contructs a random subtree of the
+*	passed depth and inserts it at a random node, replacing
+*	the original contents at and below the node.
+*	 @param max_depth maximum depth of the generated subtree
+**********************************************************/
+void agent::mutate(int max_depth) {
+
+	// Variables
+	int rand_node;
+	int depth;
+	tree<node>::iterator mutate_pt;
+
+	// Choose a mutation point
+	depth = rand() % max_depth;
+	rand_node = rand() % gp_tree.size();
+	mutate_pt = gp_tree.begin();
+	for (int i = 0; i < rand_node; i++) {
+		mutate_pt++;
+	}
+
+	// Add a new subtree and delete the original one
+	agent temp(max_depth, memory);
+	temp.randomize();
+	gp_tree.insert_subtree_after(mutate_pt, temp.gp_tree.begin());
+	gp_tree.erase(mutate_pt);
+
+	return;
+}
+
+
+/**********************************************************
 *	agent::operator=
 *	Assignment operator for the agent class. Simply copies
 *	all elements over. Performs a deep copy of the tree.
@@ -289,6 +321,7 @@ void game::set_memory(int m) {
 void game::play_round() {
 	opponent = player;
 	agent test(player, opponent);
+	test.mutate(2);
 }
 
 
