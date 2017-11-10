@@ -86,6 +86,7 @@ public:
 	// Constructors, Destructors, Etc.
 	agent() { depth = 0; memory = 5; payoff = 0; };
 	inline agent(int d, int m) { depth = d; memory = m; payoff = 0; };
+	agent(agent* parent1, agent* parent2);
 	~agent() {};
 	agent& operator= (const agent& rhs);
 
@@ -125,6 +126,7 @@ public:
 	~game() {};
 
 	// Member Functions
+	void play_round();
 	void play_round_tit_for_tat();
 
 	// Accessors & Mutators

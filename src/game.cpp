@@ -93,6 +93,48 @@ std::ostream& operator<<(std::ostream& out, const node& n) {
 
 
 /**********************************************************
+*	agent::agent()
+*	Crossover contructor. Creates a new agent that is a 
+*	random recombination of the two passed parents.
+*	 @param parent1 pointer to the first parent
+*	 @param parent2 pointer to the second parent
+**********************************************************/
+agent::agent(agent* parent1, agent* parent2) {
+
+	// Variables
+	int rand_node;
+	tree<node>::iterator cross1;
+	tree<node>::iterator cross2;
+
+	// Copy over info
+	gp_tree = parent1->gp_tree;
+	depth = parent1->depth;
+	memory = parent1->depth;
+	payoff = parent1->depth;
+	rounds_played = parent1->depth;
+
+	// Choose crossover points
+	rand_node = rand() % gp_tree.size();
+	cross1 = gp_tree.begin();
+	for (int i = 0; i < rand_node; i++) {
+		cross1++;
+	}
+	rand_node = rand() % parent2->gp_tree.size();
+	cross2 = parent2->gp_tree.begin();
+	for (int i = 0; i < rand_node; i++) {
+		cross2++;
+	}
+
+	// Delete after cross1 and insert the subtree from cross2
+	gp_tree.erase_children(cross1);	
+	gp_tree.insert_subtree_after(cross1, cross2);
+	gp_tree.erase(cross1);
+
+	return;
+}
+
+
+/**********************************************************
 *	agent::randomize()
 *	Create a new random tree for the agent to the assigned
 *	depth
@@ -242,6 +284,11 @@ void game::set_memory(int m) {
 		outcome temp = { (bool)(rand() % 2), (bool)(rand() % 2) };
 		memory.push_back(temp);
 	}
+}
+
+void game::play_round() {
+	opponent = player;
+	agent test(player, opponent);
 }
 
 

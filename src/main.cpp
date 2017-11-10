@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
 		// Run iterations
 		for (int iteration = 0; iteration < cfg.iterations; iteration++) {
 
-			g.play_round_tit_for_tat();
+			g.play_round();
 
 			// Check for best fitness
 			if ((g.get_player()->get_fitness() > local_best.get_fitness()) || iteration == 0) {
