@@ -17,6 +17,7 @@
 **********************************************************/
 #include "tree/tree.h"
 #include "tree/tree_util.h"
+#include <climits>
 #include <iostream>
 #include <vector>
 
@@ -24,7 +25,7 @@
 /**********************************************************
 *	Compiler Constants
 **********************************************************/
-#define STARTUP_ROUNDS	2000
+#define PARSIMONY_PENALTY	0.001f
 
 
 /**********************************************************
@@ -83,6 +84,7 @@ private:
 	int memory = 5;
 	int payoff = 0;
 	int rounds_played = 0;
+	float fitness = FLT_MIN;
 
 	// Private member functions
 	void add_random_children(tree<node>::iterator parent, int children, int depth);
@@ -104,10 +106,11 @@ public:
 	inline void quick_print(std::ostream& out) { print_tree_bracketed(gp_tree, out); };
 	void print(std::ostream& out);
 	void play_rounds(int rounds);
+	void calc_fitness();
 
 	// Accessors & Mutators
 	inline void add_payoff(int p) { payoff += p; };
-	inline float get_fitness() { return (rounds_played < STARTUP_ROUNDS ? -1.0f : (float)payoff / (float)(rounds_played - STARTUP_ROUNDS)); };
+	inline float get_fitness() { return fitness; };
 	
 };
 
@@ -124,7 +127,6 @@ private:
 	agent*		player;
 	agent*		opponent;
 	int			memory_sz = 5;
-	int			round = 0;
 
 public:
 
@@ -135,7 +137,7 @@ public:
 
 	// Member Functions
 	void play_round();
-	void play_round_tit_for_tat();
+	void play_round_tit_for_tat(bool dry_run);
 
 	// Accessors & Mutators
 	void set_memory(int m);

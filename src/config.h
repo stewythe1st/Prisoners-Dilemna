@@ -54,9 +54,9 @@ struct config {
 	int			seedType;
 	int			mu;
 	int			lambda;
-	int			iterations;
 	int			depth;
 	int			memory;
+	int			rounds;
 	int			runs;
 	int			evals;
 	std::string	logfile;
@@ -67,7 +67,7 @@ struct config {
 		{ "seedType", cfg_value{ &seedType, INT } },
 		{ "mu", cfg_value{ &mu, INT } },
 		{ "lambda", cfg_value{ &lambda, INT } },
-		{ "l", cfg_value{ &iterations, INT } },
+		{ "l", cfg_value{ &rounds, INT } },
 		{ "d", cfg_value{ &depth, INT } },
 		{ "k", cfg_value{ &memory, INT } },
 		{ "runs", cfg_value{ &runs, INT } },

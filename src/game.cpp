@@ -208,6 +208,7 @@ agent& agent::operator= (const agent& rhs) {
 	depth = rhs.depth;
 	memory = rhs.memory;
 	payoff = rhs.payoff;
+	fitness = rhs.fitness;
 	rounds_played = rhs.rounds_played;
 	return *this;
 }
@@ -281,15 +282,47 @@ bool agent::calc_outcome(tree<node>::iterator x, std::vector<outcome>* memory) {
 }
 
 
+/**********************************************************
+*	agent::play_rounds()
+*	Sets up a game and plays the passed number of rounds.
+*	 @param rounds number of rounds to play
+**********************************************************/
 void agent::play_rounds(int rounds) {
 	game g(memory);
 	g.set_player(this);
 	for (int i = 0; i < rounds; i++) {
-		g.play_round_tit_for_tat();
+		g.play_round_tit_for_tat(rounds_played >= (2 * memory));
 		rounds_played++;
 	}
 	return;
 }
+
+
+/**********************************************************
+*	agent::calc_fitness()
+*	Calculates fitness and update the fitness member variable
+**********************************************************/
+void agent::calc_fitness() {
+	// If insufficient rounds played, fitness is not yet valid
+	if (rounds_played < (2 * memory)) {
+		fitness = -1.0f;
+	}
+	else {
+		
+		// Fitness = payoffs / rounds 
+		// for all valid rounds (after 2 * memory rounds)
+		fitness = (float)payoff / (float)(rounds_played - (2 * memory));
+
+		// Discourage trees from optimizing purely based on size
+		// Without this term, trees of depth 1 become prevalent in the population
+		size_t size = gp_tree.size();
+		if (size > pow(1.5, depth)) {
+			fitness -= size * PARSIMONY_PENALTY;
+		}
+	}
+
+	return;
+};
 
 
 /**********************************************************
@@ -333,7 +366,7 @@ void game::set_memory(int m) {
 *	Plays a round of the game by determining each player's
 *	outcome and then updating their accumulated payoffs.
 **********************************************************/
-void game::play_round_tit_for_tat() {
+void game::play_round_tit_for_tat(bool dry_run) {
 
 	// Variables
 	outcome out;
@@ -343,7 +376,7 @@ void game::play_round_tit_for_tat() {
 	out.opponent = memory[0].player;
 
 	// Update payoff total
-	if (round >= STARTUP_ROUNDS) {
+	if (!dry_run) {
 		if (out.player == DEFECT && out.opponent == DEFECT)
 			player->add_payoff(5 - 4);
 		else if (out.player == DEFECT && out.opponent == COOPERATE)
@@ -357,8 +390,6 @@ void game::play_round_tit_for_tat() {
 	// Update memory
 	memory.insert(memory.begin(), out);
 	memory.pop_back();
-
-	round++;
 
 	return;
 }
