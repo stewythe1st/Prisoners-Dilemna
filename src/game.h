@@ -22,6 +22,12 @@
 
 
 /**********************************************************
+*	Compiler Constants
+**********************************************************/
+#define STARTUP_ROUNDS	2000
+
+
+/**********************************************************
 *	Types, Etc.
 **********************************************************/
 struct outcome {
@@ -97,10 +103,11 @@ public:
 	bool calc_outcome(tree<node>::iterator x, std::vector<outcome>* memory);
 	inline void quick_print(std::ostream& out) { print_tree_bracketed(gp_tree, out); };
 	void print(std::ostream& out);
+	void play_rounds(int rounds);
 
 	// Accessors & Mutators
-	inline void add_payoff(int p) { payoff += p; rounds_played++; };
-	inline float get_fitness() { return ((float)payoff / (float)rounds_played); };
+	inline void add_payoff(int p) { payoff += p; };
+	inline float get_fitness() { return (rounds_played < STARTUP_ROUNDS ? -1.0f : (float)payoff / (float)(rounds_played - STARTUP_ROUNDS)); };
 	
 };
 
@@ -117,7 +124,7 @@ private:
 	agent*		player;
 	agent*		opponent;
 	int			memory_sz = 5;
-	int			round = 1;
+	int			round = 0;
 
 public:
 

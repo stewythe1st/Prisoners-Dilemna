@@ -14,6 +14,7 @@
 **********************************************************/
 #include "config.h"
 #include "game.h"
+#include "pool.h"
 #include <chrono>
 #include <fstream>
 #include <iomanip>
@@ -33,16 +34,21 @@ int main(int argc, char *argv[]) {
 
 	// Variables
 	config			cfg;
-	game			g;
-	agent*			temp;
+	agent*			best;
+	agent*			parent1;
+	agent*			parent2;
 	agent			local_best;
 	agent			global_best;
+	pool			population;
+	pool			offspring;
 	std::ofstream	log;
 	std::ofstream	solution;
 
 	// Get configuration
 	if (argc > 1) {
-		cfg.read(argv[1]);
+		if (!cfg.read(argv[1])) {
+			exit(1);
+		}
 	}
 	
 	// Seed random number generator
@@ -63,38 +69,47 @@ int main(int argc, char *argv[]) {
 	log << "\tMax tree depth d = " << cfg.depth << std::endl;
 	log << "\tSeed s = " << cfg.seed << std::endl;
 
-	// Run rounds
-	g.set_memory(cfg.memory);
+	// Runs
 	for (int run = 0; run < cfg.runs; run++) {
+		log << std::endl << "Run " << run << std::endl;
+		std::cout << std::endl << "Run " << run << std::endl;
 
-		log << std::endl << "Run: " << run << std::endl;
-		std::cout << std::endl << "Run: " << run << std::endl;
+		// Generate a random start population
+		for (int i = 0; i < cfg.mu; i++) {
+			agent temp(cfg.depth, cfg.memory);
+			temp.randomize();
+			temp.play_rounds(3000);
+			population.add(temp);
+		}
+				
+		// Evals
+		for (int eval = cfg.mu; eval < cfg.evals;) {
 
-		// Create random player and opponent
-		temp = new agent(cfg.depth, cfg.memory);
-		temp->randomize();
-		g.set_player(temp);
-
-		// Run iterations
-		for (int iteration = 0; iteration < cfg.iterations; iteration++) {
-
-			g.play_round();
-
-			// Check for best fitness
-			if ((g.get_player()->get_fitness() > local_best.get_fitness()) || iteration == 0) {
-				local_best = *g.get_player();
-				log << iteration + 1 << "\t" << IO_FORMAT_FLOAT(4) << local_best.get_fitness() << std::endl;
-				std::cout << iteration + 1 << "\t" << IO_FORMAT_FLOAT(4) << local_best.get_fitness() << std::endl;
+			// Generate offspring
+			for (int i = 0; i < cfg.lambda; i++) {
+				parent1 = population.choose_parent_fp();
+				parent2 = population.choose_parent_fp();
+				agent temp(parent1, parent2);
+				temp.play_rounds(3000);
+				offspring.add(temp);
+				eval++;
 			}
-		}
 
-		// Check for global best
-		if ((local_best.get_fitness() > global_best.get_fitness()) || run == 0) {
-			global_best = local_best;
-		}
+			// Add offspring to population
+			population.copy_from(&offspring);
+			offspring.clear();
 
-		// Clean up
-		delete g.get_player();
+			// Reduce population
+			population.reduce_by_truncation(cfg.mu);
+
+			// Update local best
+			best = population.get_best();
+			if (best->get_fitness() > local_best.get_fitness()) {
+				local_best = *best;
+			}
+			log << eval << "\t" << IO_FORMAT_FLOAT(4) << local_best.get_fitness() << std::endl;
+			std::cout << eval << "\t" << IO_FORMAT_FLOAT(4) << population.get_average() << "\t" << IO_FORMAT_FLOAT(4) << local_best.get_fitness() << std::endl;
+		}
 	}
 
 	// Print global best to solution file

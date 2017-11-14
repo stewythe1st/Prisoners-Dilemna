@@ -109,9 +109,7 @@ agent::agent(agent* parent1, agent* parent2) {
 	// Copy over info
 	gp_tree = parent1->gp_tree;
 	depth = parent1->depth;
-	memory = parent1->depth;
-	payoff = parent1->depth;
-	rounds_played = parent1->depth;
+	memory = parent1->memory;
 
 	// Choose crossover points
 	rand_node = rand() % gp_tree.size();
@@ -283,6 +281,17 @@ bool agent::calc_outcome(tree<node>::iterator x, std::vector<outcome>* memory) {
 }
 
 
+void agent::play_rounds(int rounds) {
+	game g(memory);
+	g.set_player(this);
+	for (int i = 0; i < rounds; i++) {
+		g.play_round_tit_for_tat();
+		rounds_played++;
+	}
+	return;
+}
+
+
 /**********************************************************
 *	agent::print()
 *	Prints the agent's tree in pre-order format to the passed
@@ -318,12 +327,6 @@ void game::set_memory(int m) {
 	}
 }
 
-void game::play_round() {
-	opponent = player;
-	agent test(player, opponent);
-	test.mutate(2);
-}
-
 
 /**********************************************************
 *	game::play_round()
@@ -340,18 +343,22 @@ void game::play_round_tit_for_tat() {
 	out.opponent = memory[0].player;
 
 	// Update payoff total
-	if (out.player == DEFECT && out.opponent == DEFECT)
-		player->add_payoff(5 - 4);
-	else if (out.player == DEFECT && out.opponent == COOPERATE)
-		player->add_payoff(5 - 0);
-	else if (out.player == COOPERATE && out.opponent == DEFECT)
-		player->add_payoff(5 - 5);
-	else if (out.player == COOPERATE && out.opponent == COOPERATE)
-		player->add_payoff(5 - 2);
+	if (round >= STARTUP_ROUNDS) {
+		if (out.player == DEFECT && out.opponent == DEFECT)
+			player->add_payoff(5 - 4);
+		else if (out.player == DEFECT && out.opponent == COOPERATE)
+			player->add_payoff(5 - 0);
+		else if (out.player == COOPERATE && out.opponent == DEFECT)
+			player->add_payoff(5 - 5);
+		else if (out.player == COOPERATE && out.opponent == COOPERATE)
+			player->add_payoff(5 - 2);
+	}
 
 	// Update memory
 	memory.insert(memory.begin(), out);
 	memory.pop_back();
+
+	round++;
 
 	return;
 }

@@ -52,20 +52,26 @@ struct config {
 	std::string	srcfile	= DEFAULT_FILE;
 	int			seed;
 	int			seedType;
+	int			mu;
+	int			lambda;
 	int			iterations;
 	int			depth;
 	int			memory;
 	int			runs;
+	int			evals;
 	std::string	logfile;
 	std::string	solutionfile;
 
 	std::map<std::string, cfg_value> defs = {
 		{ "seed", cfg_value{ &seed, INT } },
 		{ "seedType", cfg_value{ &seedType, INT } },
+		{ "mu", cfg_value{ &mu, INT } },
+		{ "lambda", cfg_value{ &lambda, INT } },
 		{ "l", cfg_value{ &iterations, INT } },
 		{ "d", cfg_value{ &depth, INT } },
 		{ "k", cfg_value{ &memory, INT } },
 		{ "runs", cfg_value{ &runs, INT } },
+		{ "evals", cfg_value{ &evals, INT } },
 		{ "logfile", cfg_value{ &logfile, STRING } },
 		{ "solutionfile", cfg_value{ &solutionfile, STRING } }
 	};
