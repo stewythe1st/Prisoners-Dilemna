@@ -14,7 +14,40 @@
 **********************************************************/
 #include "game.h"
 #include "pool.h"
+#include <algorithm>
 #include <cstdlib>
+
+
+/**********************************************************
+*	pool::calc_fp()
+*	Updates the fitness proportional vector. Each element
+*	holds a ordered slice of (0.0-1.0) with width eqaul to
+*	elementFitness/totalFitness
+**********************************************************/
+void pool::calc_fp() {
+
+	// Variables
+	float	totalFitness;
+	float	lastProbability;
+
+	fp.clear();
+
+	// Get the sum of fitness values
+	totalFitness = 0;
+	for (std::vector<agent>::iterator it = agents.begin(); it != agents.end(); ++it) {
+		totalFitness += (*it).get_fitness();
+	}
+
+	// Build up FP vector
+	lastProbability = 0.0f;
+	fp.clear();
+	for (std::vector<agent>::iterator it = agents.begin(); it != agents.end(); ++it) {
+		fp.push_back(((*it).get_fitness() / totalFitness) + lastProbability);
+		lastProbability = fp.back();
+	}
+
+	return;
+}
 
 
 /**********************************************************
@@ -25,26 +58,77 @@
 **********************************************************/
 agent* pool::choose_parent_fp() {
 
-	// Variables
-	float	total = 0.0f;
-	float	temp = 0.0f;
-	agent*	rtn = &agents.front();
-
-	// Calculate total
-	for (std::vector<agent>::iterator it = agents.begin(); it != agents.end(); it++) {
-		total += (*it).get_fitness();
-	}
-
 	// Choose a random decimal (0.000 - 1.000)
-	float rand = (float)(std::rand() % 1001) / 1000.0f;
+	float value = (float)(std::rand() % 1001) / 1000.0f;
 
-	// Keep summing up fitness proportional until we get to our random number
-	for (std::vector<agent>::iterator it = agents.begin(); it != agents.end(); it++) {
-		temp += ((*it).get_fitness() / total);
-		if (temp > rand) {
-			rtn = &(*it);
+	// Walk down the FP probability array and find the corresponding parent
+	size_t i = 0;
+	while (fp[i] < value && i < agents.size() - 1)
+		i++;
+
+	return &agents[i];
+}
+
+
+/**********************************************************
+*	pool::calc_os()
+*	Updates the overselection vectors. The os variable holds
+*	two vectors containing pointers to the top proportion
+*	and the bottom proportion, respectively.
+**********************************************************/
+static inline bool agentCompare(agent a, agent b) { return a.get_fitness() > b.get_fitness(); };
+void pool::calc_os() {
+
+	// Variables
+	int i = 0;
+	float top_pct;
+
+	os[0].clear();
+	os[1].clear();
+	
+	// Determine top tier fraction
+	for (std::map<int, float>::iterator it = os_top_proportion.begin(); it != os_top_proportion.end(); it++) {
+		top_pct = it->second;
+		if (it->first > agents.size()) {
 			break;
 		}
+	}
+
+	// Sort agents
+	std::sort(agents.begin(), agents.end(), agentCompare);
+
+	// Add agents to top tier or bottom tier
+	while (i < (float)agents.size() * top_pct) {
+		os[0].push_back(&agents[i]);
+		i++;
+	}
+	while (i < agents.size()) {
+		os[1].push_back(&agents[i]);
+		i++;
+	}
+
+	return;
+}
+
+
+/**********************************************************
+*	pool::choose_parent_os()
+*	Returns a pointer to a member agent chosen by overselection
+*	 @return pointer to the chosen agent
+**********************************************************/
+agent* pool::choose_parent_os() {
+
+	// Choose a group
+	int		rand_val = rand() % 10;
+	agent*	rtn;
+
+	if (rand_val < 8) {
+		rand_val = rand() % os[0].size();
+		rtn = os[0][rand_val];
+	}
+	else {
+		rand_val = rand() % os[1].size();
+		rtn = os[1][rand_val];
 	}
 
 	return rtn;

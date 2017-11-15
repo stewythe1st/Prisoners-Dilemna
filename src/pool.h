@@ -15,12 +15,24 @@
 *	Headers
 **********************************************************/
 #include  "game.h"
+#include <map>
 #include <vector>
 
 
 /**********************************************************
 *	Compiler Constants
 **********************************************************/
+
+
+/**********************************************************
+*	Variables
+**********************************************************/
+static std::map<int, float> os_top_proportion = {
+	{ 1000, 0.32f },
+	{ 2000, 0.16f },
+	{ 4000, 0.8f },
+	{ 8000, 0.4f },
+};
 
 
 /**********************************************************
@@ -37,6 +49,7 @@ private:
 
 	std::vector<agent>	agents;
 	std::vector<float>	fp;
+	std::vector<agent*>	os[2];
 	int					gens_unchanged = 0;
 	float				last_best;
 
@@ -50,7 +63,10 @@ public:
 	~pool() {};
 
 	// Member Functions
+	void calc_fp();
 	agent* choose_parent_fp();
+	void calc_os();
+	agent* choose_parent_os();
 	void reduce_by_truncation(int size);
 	void reduce_by_k_tourn(size_t size, int k);
 	void copy_from(pool* p);

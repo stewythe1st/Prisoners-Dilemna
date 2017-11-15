@@ -33,7 +33,12 @@ enum seedType {
 	SEED_TIME_BASED
 };
 
-enum survivalType {
+enum parentSelType {
+	PARENT_FP,
+	PARENT_OS
+};
+
+enum survivalSelType {
 	SURVIVAL_TRUNCATION,
 	SURVIVAL_KTOURN
 };
@@ -69,6 +74,7 @@ struct config {
 	int			rounds;
 	int			runs;
 	int			evals;
+	int			parentSelection;
 	int			survivalSelection;
 	int			survivalK;
 	int			termTest;
@@ -86,6 +92,7 @@ struct config {
 		{ "k", cfg_value{ &memory, INT } },
 		{ "runs", cfg_value{ &runs, INT } },
 		{ "evals", cfg_value{ &evals, INT } },
+		{ "parentSelection", cfg_value{ &parentSelection, INT } },
 		{ "survivalSelection", cfg_value{ &survivalSelection, INT } },
 		{ "survivalK", cfg_value{ &survivalK, INT } },
 		{ "unchanged", cfg_value{ &unchanged, INT } },

@@ -35,8 +35,8 @@ int main(int argc, char *argv[]) {
 	// Variables
 	config			cfg;
 	agent*			best;
-	agent*			parent1;
-	agent*			parent2;
+	agent*			parent1 = nullptr;
+	agent*			parent2 = nullptr;
 	agent			global_best;
 	pool			population;
 	pool			offspring;
@@ -91,10 +91,27 @@ int main(int argc, char *argv[]) {
 		eval = cfg.mu;
 		while (!terminate) {
 
+			switch (cfg.parentSelection) {
+			case PARENT_FP:
+				population.calc_fp();
+				break;
+			case PARENT_OS:
+				population.calc_os();
+				break;
+			}
+
 			// Generate offspring
 			for (int i = 0; i < cfg.lambda; i++) {
-				parent1 = population.choose_parent_fp();
-				parent2 = population.choose_parent_fp();
+				switch (cfg.parentSelection) {
+				case PARENT_FP:
+					parent1 = population.choose_parent_fp();
+					parent2 = population.choose_parent_fp();
+					break;
+				case PARENT_OS:
+					parent1 = population.choose_parent_os();
+					parent2 = population.choose_parent_os();
+					break;
+				}
 				agent temp(parent1, parent2);
 				temp.play_rounds(cfg.rounds);
 				temp.calc_fitness();
