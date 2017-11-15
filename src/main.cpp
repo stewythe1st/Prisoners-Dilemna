@@ -107,7 +107,14 @@ int main(int argc, char *argv[]) {
 			offspring.clear();
 
 			// Reduce population
-			population.reduce_by_truncation(cfg.mu);
+			switch (cfg.survivalSelection) {
+			case SURVIVAL_TRUNCATION:
+				population.reduce_by_truncation(cfg.mu);
+				break;
+			case SURVIVAL_KTOURN:
+				population.reduce_by_k_tourn(cfg.mu, cfg.survivalK);
+				break;
+			}			
 
 			// Update local best
 			best = population.get_best();

@@ -40,6 +40,9 @@ private:
 	int					gens_unchanged = 0;
 	float				last_best;
 
+	// Private Member Functions
+	int k_tourn(int k, bool best, bool replacement);
+
 public:
 
 	// Constructors, Destructors, Etc.
@@ -49,6 +52,7 @@ public:
 	// Member Functions
 	agent* choose_parent_fp();
 	void reduce_by_truncation(int size);
+	void reduce_by_k_tourn(size_t size, int k);
 	void copy_from(pool* p);
 	inline void clear() { agents.clear(); };
 	agent* get_best();

@@ -52,6 +52,83 @@ agent* pool::choose_parent_fp() {
 
 
 /**********************************************************
+*	k_tourn(int k, int type)
+*	Randomly picks k agents and returns the index of the
+*	agent with either the highest or lowest fitness bassed
+*	on which type was passed.
+*	 @param k number of agents chosen in in the tournament
+*	 @param highest true for highest, false for lowest
+*	 @param replacement true if replacement is allowed
+*	 @return index of the chosen state
+**********************************************************/
+int pool::k_tourn(int k, bool highest, bool replacement) {
+
+	// Variables
+	int*	tournament = new int[k];
+	int		bestIdx;
+	bool	inTournament;
+
+	// Randomly pick members for the tournament, with or without replacement
+	for (int i = 0; i < k; i++) {
+		tournament[i] = rand() % agents.size();
+		if (!replacement) {
+			inTournament = false;
+			for (int j = 0; j < i && !inTournament; j++) {
+				if (tournament[j] == tournament[i]) {
+					i--;
+					break;
+				}
+			}
+		}
+	}
+
+	// Run tournament, looking for best or worst fitness	
+	bestIdx = tournament[0];
+	for (int i = 1; i < k; i++) {
+		if (!highest && agents[tournament[i]].get_fitness() > agents[bestIdx].get_fitness())
+			bestIdx = tournament[i];
+		else if (highest && agents[tournament[i]].get_fitness() < agents[bestIdx].get_fitness())
+			bestIdx = tournament[i];
+	}
+
+	// Clean up
+	delete[] tournament;
+	return bestIdx;
+}
+
+
+/**********************************************************
+*	reduce_by_k_tourn()
+*	Reduces the pool to the passed size by running k-tournaments.
+*	 @param size desired size of the pool after removal
+*	 @param k number of states chosen in each tournament
+**********************************************************/
+void pool::reduce_by_k_tourn(size_t size, int k) {
+
+	// Sanity check
+	if (agents.size() < size)
+		return;
+
+	// Variables
+	int idx;
+
+	// Run tournaments until we've shrunk to desired size
+	while (agents.size() > size) {
+
+		// Since we're not allowing replacement, need to make sure k isn't bigger than size
+		if (k > (int)agents.size())
+			k = (int)agents.size();
+
+		// Choose the lowest of k agents and remove it
+		idx = k_tourn(k, true, false);
+		agents.erase(agents.begin() + idx);
+	}
+
+	return;
+}
+
+
+/**********************************************************
 *	pool::reduce_by_truncation()
 *	Repeatedly removes an agent from the pool until it has
 *	been shrunk to the passed size.
