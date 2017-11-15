@@ -40,6 +40,8 @@ int main(int argc, char *argv[]) {
 	agent			global_best;
 	pool			population;
 	pool			offspring;
+	int				eval;
+	bool			terminate;
 	std::ofstream	log;
 	std::ofstream	solution;
 
@@ -85,7 +87,9 @@ int main(int argc, char *argv[]) {
 		}
 				
 		// Evals
-		for (int eval = cfg.mu; eval < cfg.evals;) {
+		terminate = false;
+		eval = cfg.mu;
+		while (!terminate) {
 
 			// Generate offspring
 			for (int i = 0; i < cfg.lambda; i++) {
@@ -111,6 +115,16 @@ int main(int argc, char *argv[]) {
 				local_best = *best;
 				log << eval << "\t" << IO_FORMAT_FLOAT(3) << local_best.get_fitness() << std::endl;
 				std::cout << eval << "\t" << IO_FORMAT_FLOAT(3) << population.get_average() << "\t" << IO_FORMAT_FLOAT(4) << local_best.get_fitness() << std::endl;
+			}
+
+			// Run termination test
+			switch (cfg.termTest) {
+			case TERMTEST_BEST_UNCHANGED:
+				terminate = population.term_test_best_unchanged(cfg.unchanged);
+				break;
+			case TERMTEST_NUM_EVALS:
+				terminate = (eval >= cfg.evals);
+				break;
 			}
 
 		}

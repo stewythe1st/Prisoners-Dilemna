@@ -37,6 +37,8 @@ private:
 
 	std::vector<agent>	agents;
 	std::vector<float>	fp;
+	int					gens_unchanged = 0;
+	float				last_best;
 
 public:
 
@@ -51,6 +53,7 @@ public:
 	inline void clear() { agents.clear(); };
 	agent* get_best();
 	float get_average();
+	bool term_test_best_unchanged(int target);
 
 	// Accessors & Mutators
 	agent* get(int i) { return &agents[i]; };

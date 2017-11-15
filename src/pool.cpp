@@ -52,7 +52,7 @@ agent* pool::choose_parent_fp() {
 
 
 /**********************************************************
-*	pool::void pool::reduce_by_truncation()
+*	pool::reduce_by_truncation()
 *	Repeatedly removes an agent from the pool until it has
 *	been shrunk to the passed size.
 *	 @param int	desired size of the pool
@@ -63,7 +63,7 @@ void pool::reduce_by_truncation(int size) {
 	std::vector<agent>::iterator lowest;
 
 	// Repeat until desired size is reached
-	while (agents.size() > size) {
+	while (agents.size() > (size_t)size) {
 		lowest = agents.begin();
 
 		// Find element with lowest fitness and remove it
@@ -78,6 +78,33 @@ void pool::reduce_by_truncation(int size) {
 	return;
 }
 
+
+/**********************************************************
+*	pool::term_test_best_unchanged()
+*	Termination test. Checks if best agent in pool has not
+*	changed for the passed number of generations.
+*	 @param target Target number of generations unchanged
+*	 @return boolean for termination
+**********************************************************/
+bool pool::term_test_best_unchanged(int target) {
+	float best = get_best()->get_fitness();
+	if (last_best == best) {
+		gens_unchanged++;
+	}
+	else {
+		gens_unchanged = 0;
+		last_best = best;
+	}
+	return(gens_unchanged >= target);
+}
+
+
+/**********************************************************
+*	pool::copy_from()
+*	Copies all the agents in the passed pool and inserts
+*	them into the current pool.
+*	 @param p Target pool to copy from
+**********************************************************/
 void pool::copy_from(pool* p) {
 	for (std::vector<agent>::iterator it = p->agents.begin(); it != p->agents.end(); it++) {
 		agents.push_back(*it);
@@ -86,6 +113,11 @@ void pool::copy_from(pool* p) {
 }
 
 
+/**********************************************************
+*	pool::get_best()
+*	Finds the best (highest fitness) agent in the pool.
+*	 @return pointer to the best agent
+**********************************************************/
 agent* pool::get_best() {
 
 	// Variables
@@ -100,6 +132,13 @@ agent* pool::get_best() {
 	return &(*highest);
 }
 
+
+/**********************************************************
+*	pool::get_average()
+*	Calculates and returns the average fitness of all agents
+*	in the pool.
+*	 @return average value of all agents in the pool
+**********************************************************/
 float pool::get_average() {
 
 	// Variables

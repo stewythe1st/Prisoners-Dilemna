@@ -33,6 +33,11 @@ enum seedType{
 	SEED_TIME_BASED
 };
 
+enum testTestType {
+	TERMTEST_NUM_EVALS,
+	TERMTEST_BEST_UNCHANGED	
+};
+
 enum dataType {
 	INT,
 	STRING
@@ -59,6 +64,8 @@ struct config {
 	int			rounds;
 	int			runs;
 	int			evals;
+	int			termTest;
+	int			unchanged;
 	std::string	logfile;
 	std::string	solutionfile;
 
@@ -72,6 +79,8 @@ struct config {
 		{ "k", cfg_value{ &memory, INT } },
 		{ "runs", cfg_value{ &runs, INT } },
 		{ "evals", cfg_value{ &evals, INT } },
+		{ "unchanged", cfg_value{ &unchanged, INT } },
+		{ "termTest", cfg_value{ &termTest, INT } },
 		{ "logfile", cfg_value{ &logfile, STRING } },
 		{ "solutionfile", cfg_value{ &solutionfile, STRING } }
 	};
