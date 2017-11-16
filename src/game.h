@@ -87,7 +87,7 @@ private:
 	float fitness = FLT_MIN;
 
 	// Private member functions
-	void add_random_children(tree<node>::iterator parent, int children, int depth);
+	void add_random_children(tree<node>::iterator parent, int children, int depth, bool leaf_before_max);
 
 public:
 
@@ -99,7 +99,7 @@ public:
 	agent& operator= (const agent& rhs);
 
 	// Member Functions
-	void randomize();
+	void randomize(bool leaf_before_max);
 	void mutate(int max_depth);
 	inline bool calc_outcome(std::vector<outcome>* memory) { return calc_outcome(gp_tree.begin(), memory); };
 	bool calc_outcome(tree<node>::iterator x, std::vector<outcome>* memory);

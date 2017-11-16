@@ -134,10 +134,13 @@ agent::agent(agent* parent1, agent* parent2) {
 
 /**********************************************************
 *	agent::randomize()
-*	Create a new random tree for the agent to the assigned
-*	depth
+*	Create a new random gp_tree for the agent. If leaf_before_max
+*	is set to true, grow type trees (terminal nodes allowed
+*	at any depth) and false for full type trees (terminal
+*	nodes only at max depth).
+*	 @param leaf_before_max allow leaf nodes before max depth?
 **********************************************************/
-void agent::randomize() {
+void agent::randomize(bool leaf_before_max) {
 
 	// Sanity check
 	if (depth < 0)
@@ -146,18 +149,33 @@ void agent::randomize() {
 	// Variables
 	tree<node>::iterator root;
 	int type;
+	bool leaf;
 
-	// Place root node and recursively add child nodes
-	if (depth != 0) {
-		type = rand() % NUM_OPERATORS;
-		root = gp_tree.insert(gp_tree.begin(), node(false, type, 0));
-		add_random_children(root, (type == NOT ? 1 : 2), 1);
+	// Decide if this should be a leaf node
+	if (!leaf_before_max) {
+		leaf = (depth == 0);
+		if (!leaf) {
+			type = rand() % NUM_OPERATORS;
+		}
+	}
+	else {
+		type = rand() % (NUM_OPERATORS + NUM_AGENT_TYPES);
+		if (type >= NUM_OPERATORS) {
+			type -= NUM_OPERATORS;
+			leaf = true;
+		}
+		else {
+			leaf = false;
+		}
 	}
 
-	// If depth is 0, then just place a single leaf node
+	// Place root node
+	if (!leaf) {
+		root = gp_tree.insert(gp_tree.begin(), node(leaf, type, 0));
+		add_random_children(root, (type == NOT ? 1 : 2), 1, leaf_before_max);
+	}
 	else {
-		type = rand() % NUM_AGENT_TYPES;
-		gp_tree.insert(gp_tree.begin(), node(true, type, (rand() % memory) + 1));
+		gp_tree.insert(gp_tree.begin(), node(leaf, type, (rand() % memory) + 1));
 	}
 
 	return;
@@ -188,7 +206,7 @@ void agent::mutate(int max_depth) {
 
 	// Add a new subtree and delete the original one
 	agent temp(max_depth, memory);
-	temp.randomize();
+	temp.randomize(true);
 	gp_tree.insert_subtree_after(mutate_pt, temp.gp_tree.begin());
 	gp_tree.erase(mutate_pt);
 
@@ -219,32 +237,56 @@ agent& agent::operator= (const agent& rhs) {
 *	Adds a random child at a point in the tree. To be used 
 *	in conjunction with randomize(). This must be seperate
 *	because placing the root node in randomize() requires
-*	a different procedure. This function is called 
-*	recursively.
+*	a different procedure. leaf_before_max is true for grow
+*	type trees and false for full type trees. This function
+*	is called recursively.
 *	 @param parent parent node in the tree
 *	 @param children number of children to add
 *	 @param cur_depth current recurive depth
+*	 @param leaf_before_max allow leaf nodes before max depth?
 **********************************************************/
-void agent::add_random_children(tree<node>::iterator parent, int children, int cur_depth) {
+void agent::add_random_children(tree<node>::iterator parent, int children, int cur_depth, bool leaf_before_max) {
 
 	// Variables
 	int type;
 	tree<node>::iterator temp;
-	bool leaf = (cur_depth == depth);
+	bool leaf;
+	
+	// Decide if this should be a leaf node
+	if (cur_depth >= depth) {
+		leaf = true;
+		type = rand() % NUM_OPERATORS;
+	}
+	else if (!leaf_before_max) {
+		leaf = (cur_depth == depth);
+		if (!leaf) {
+			type = rand() % NUM_OPERATORS;
+		}
+	}
+	else {
+		type = rand() % (NUM_OPERATORS + NUM_AGENT_TYPES);
+		if (type >= NUM_OPERATORS) {
+			type -= NUM_OPERATORS;
+			leaf = true;
+		}
+		else {
+			leaf = false;
+		}
+		
+	}
 
 	// Add children (recursively if not a leaf node)
 	for (int i = 0; i < children; i++) {
 		if (!leaf) {
-			type = rand() % NUM_OPERATORS;
 			temp = gp_tree.append_child(parent, node(leaf, type, 0));
-			add_random_children(temp, (type == NOT ? 1 : 2), cur_depth + 1);
+			add_random_children(temp, (type == NOT ? 1 : 2), cur_depth + 1, leaf_before_max);
 		}
 		else {
-			type = rand() % NUM_CHOICES;
 			temp = gp_tree.append_child(parent, node(leaf, type, (rand() % memory) + 1));
 		}
 	}
-	
+
+	return;
 }
 
 

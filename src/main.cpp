@@ -78,9 +78,11 @@ int main(int argc, char *argv[]) {
 		agent local_best;
 
 		// Generate a random start population
+		// Use a 50% chance to generate leaf nodes before max depth
+		// (ramped half-and-half - 50/50 grow/full)
 		for (int i = 0; i < cfg.mu; i++) {
 			agent temp(cfg.depth, cfg.memory);
-			temp.randomize();
+			temp.randomize(rand() % 2);
 			temp.play_rounds(cfg.rounds);
 			temp.calc_fitness();
 			population.add(temp);
