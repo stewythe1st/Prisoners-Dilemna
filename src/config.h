@@ -50,6 +50,7 @@ enum testTestType {
 
 enum dataType {
 	INT,
+	FLOAT,
 	STRING
 };
 
@@ -74,6 +75,7 @@ struct config {
 	int			rounds;
 	int			runs;
 	int			evals;
+	float		parsimony;
 	int			parentSelection;
 	int			survivalSelection;
 	int			survivalK;
@@ -92,6 +94,7 @@ struct config {
 		{ "k", cfg_value{ &memory, INT } },
 		{ "runs", cfg_value{ &runs, INT } },
 		{ "evals", cfg_value{ &evals, INT } },
+		{ "p", cfg_value{ &parsimony, FLOAT } },
 		{ "parentSelection", cfg_value{ &parentSelection, INT } },
 		{ "survivalSelection", cfg_value{ &survivalSelection, INT } },
 		{ "survivalK", cfg_value{ &survivalK, INT } },

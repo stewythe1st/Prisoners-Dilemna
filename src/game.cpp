@@ -344,7 +344,7 @@ void agent::play_rounds(int rounds) {
 *	agent::calc_fitness()
 *	Calculates fitness and update the fitness member variable
 **********************************************************/
-void agent::calc_fitness() {
+void agent::calc_fitness(float parsimony) {
 	// If insufficient rounds played, fitness is not yet valid
 	if (rounds_played < (2 * memory)) {
 		fitness = -1.0f;
@@ -359,7 +359,7 @@ void agent::calc_fitness() {
 		// Without this term, trees of depth 1 become prevalent in the population
 		size_t size = gp_tree.size();
 		if (size > pow(1.5, depth)) {
-			fitness -= size * PARSIMONY_PENALTY;
+			fitness -= size * parsimony;
 		}
 	}
 

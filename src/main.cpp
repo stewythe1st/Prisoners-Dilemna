@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
 			agent temp(cfg.depth, cfg.memory);
 			temp.randomize(rand() % 2);
 			temp.play_rounds(cfg.rounds);
-			temp.calc_fitness();
+			temp.calc_fitness(cfg.parsimony);
 			population.add(temp);
 		}
 				
@@ -116,7 +116,7 @@ int main(int argc, char *argv[]) {
 				}
 				agent temp(parent1, parent2);
 				temp.play_rounds(cfg.rounds);
-				temp.calc_fitness();
+				temp.calc_fitness(cfg.parsimony);
 				offspring.add(temp);
 				eval++;
 			}

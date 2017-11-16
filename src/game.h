@@ -25,7 +25,6 @@
 /**********************************************************
 *	Compiler Constants
 **********************************************************/
-#define PARSIMONY_PENALTY	0.001f
 
 
 /**********************************************************
@@ -106,7 +105,7 @@ public:
 	inline void quick_print(std::ostream& out) { print_tree_bracketed(gp_tree, out); };
 	void print(std::ostream& out);
 	void play_rounds(int rounds);
-	void calc_fitness();
+	void calc_fitness(float parsimony);
 
 	// Accessors & Mutators
 	inline void add_payoff(int p) { payoff += p; };
