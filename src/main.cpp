@@ -51,6 +51,12 @@ int main(int argc, char *argv[]) {
 			exit(1);
 		}
 	}
+
+	// Check for incalid configuration
+	if (cfg.rounds < cfg.memory * 3) {
+		std::cout << "Error: Configuration constraint violated (l >= 3k)";
+		exit(1);
+	}
 	
 	// Seed random number generator
 	if (cfg.seedType == SEED_TIME_BASED) {
