@@ -152,13 +152,11 @@ void agent::randomize(bool leaf_before_max) {
 	bool leaf;
 
 	// Decide if this should be a leaf node
-	if (!leaf_before_max) {
-		leaf = (depth == 0);
-		if (!leaf) {
-			type = rand() % NUM_OPERATORS;
-		}
+	if (depth == 0) {
+		leaf = true;
+		type = rand() % NUM_AGENT_TYPES;
 	}
-	else {
+	else if (leaf_before_max) {
 		type = rand() % (NUM_OPERATORS + NUM_AGENT_TYPES);
 		if (type >= NUM_OPERATORS) {
 			type -= NUM_OPERATORS;
@@ -167,6 +165,10 @@ void agent::randomize(bool leaf_before_max) {
 		else {
 			leaf = false;
 		}
+	}
+	else {
+		leaf = false;
+		type = rand() % NUM_OPERATORS;
 	}
 
 	// Place root node
@@ -255,15 +257,9 @@ void agent::add_random_children(tree<node>::iterator parent, int children, int c
 	// Decide if this should be a leaf node
 	if (cur_depth >= depth) {
 		leaf = true;
-		type = rand() % NUM_OPERATORS;
+		type = rand() % NUM_AGENT_TYPES;
 	}
-	else if (!leaf_before_max) {
-		leaf = (cur_depth == depth);
-		if (!leaf) {
-			type = rand() % NUM_OPERATORS;
-		}
-	}
-	else {
+	else if (leaf_before_max) {
 		type = rand() % (NUM_OPERATORS + NUM_AGENT_TYPES);
 		if (type >= NUM_OPERATORS) {
 			type -= NUM_OPERATORS;
@@ -272,9 +268,12 @@ void agent::add_random_children(tree<node>::iterator parent, int children, int c
 		else {
 			leaf = false;
 		}
-		
 	}
-
+	else {
+		leaf = false;
+		type = rand() % NUM_OPERATORS;
+	}
+	
 	// Add children (recursively if not a leaf node)
 	for (int i = 0; i < children; i++) {
 		if (!leaf) {
@@ -333,7 +332,7 @@ void agent::play_rounds(int rounds) {
 	game g(memory);
 	g.set_player(this);
 	for (int i = 0; i < rounds; i++) {
-		g.play_round_tit_for_tat(rounds_played >= (2 * memory));
+		g.play_round_tit_for_tat(rounds_played < (2 * memory));
 		rounds_played++;
 	}
 	return;
@@ -357,10 +356,7 @@ void agent::calc_fitness(float parsimony) {
 
 		// Discourage trees from optimizing purely based on size
 		// Without this term, trees of depth 1 become prevalent in the population
-		size_t size = gp_tree.size();
-		if (size > pow(1.5, depth)) {
-			fitness -= size * parsimony;
-		}
+		fitness -= (float)gp_tree.size() * parsimony;
 	}
 
 	return;
