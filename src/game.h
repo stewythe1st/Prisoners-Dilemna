@@ -17,6 +17,7 @@
 **********************************************************/
 #include "tree/tree.h"
 #include "tree/tree_util.h"
+#include <cfloat>
 #include <climits>
 #include <iostream>
 #include <vector>

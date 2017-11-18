@@ -3,6 +3,9 @@
 *.h text eol=lf
 *.cfg text eol=lf
 
+# Unix-native compilation files
+*.sh text eol=lf
+
 # Visual Studio file can retain Windows line ending
 *.sln text eol=crlf
 *.vcxproj* text eol=crlf
