@@ -59,7 +59,7 @@ void pool::calc_fp() {
 agent* pool::choose_parent_fp() {
 
 	// Choose a random decimal (0.000 - 1.000)
-	float value = (float)(std::rand() % 1001) / 1000.0f;
+	float value = GEN_RAND_DECIMAL;
 
 	// Walk down the FP probability array and find the corresponding parent
 	size_t i = 0;
@@ -89,7 +89,7 @@ void pool::calc_os() {
 	// Determine top tier fraction
 	for (std::map<int, float>::iterator it = os_top_proportion.begin(); it != os_top_proportion.end(); it++) {
 		top_pct = it->second;
-		if (it->first > agents.size()) {
+		if (it->first > (int)agents.size()) {
 			break;
 		}
 	}
@@ -102,7 +102,7 @@ void pool::calc_os() {
 		os[0].push_back(&agents[i]);
 		i++;
 	}
-	while (i < agents.size()) {
+	while (i < (int)agents.size()) {
 		os[1].push_back(&agents[i]);
 		i++;
 	}

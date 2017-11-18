@@ -328,12 +328,19 @@ bool agent::calc_outcome(tree<node>::iterator x, std::vector<outcome>* memory) {
 *	Sets up a game and plays the passed number of rounds.
 *	 @param rounds number of rounds to play
 **********************************************************/
-void agent::play_rounds(int rounds) {
-	game g(memory);
-	g.set_player(this);
-	for (int i = 0; i < rounds; i++) {
-		g.play_round_tit_for_tat(rounds_played < (2 * memory));
-		rounds_played++;
+void agent::play_rounds(int rounds, int rerandmem) {
+	for (int i = 0; i < rerandmem; i++) {
+		game g(memory);
+		g.set_player(this);
+		for (int j = 0; j < rounds; j++) {
+			if (j < (2 * memory)) {
+				g.play_round_tit_for_tat(true);
+			}
+			else {
+				g.play_round_tit_for_tat(false);
+				rounds_played++;
+			}
+		}
 	}
 	return;
 }
@@ -352,7 +359,7 @@ void agent::calc_fitness(float parsimony) {
 		
 		// Fitness = payoffs / rounds 
 		// for all valid rounds (after 2 * memory rounds)
-		fitness = (float)payoff / (float)(rounds_played - (2 * memory));
+		fitness = (float)payoff / (float)(rounds_played);
 
 		// Discourage trees from optimizing purely based on size
 		// Without this term, trees of depth 1 become prevalent in the population

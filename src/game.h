@@ -104,7 +104,7 @@ public:
 	bool calc_outcome(tree<node>::iterator x, std::vector<outcome>* memory);
 	inline void quick_print(std::ostream& out) { print_tree_bracketed(gp_tree, out); };
 	void print(std::ostream& out);
-	void play_rounds(int rounds);
+	void play_rounds(int rounds, int rerandmem);
 	void calc_fitness(float parsimony);
 
 	// Accessors & Mutators
@@ -135,7 +135,6 @@ public:
 	~game() {};
 
 	// Member Functions
-	void play_round();
 	void play_round_tit_for_tat(bool dry_run);
 
 	// Accessors & Mutators

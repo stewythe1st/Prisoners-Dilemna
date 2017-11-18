@@ -76,6 +76,8 @@ struct config {
 	int			runs;
 	int			evals;
 	float		parsimony;
+	float		mutation;
+	int			rerandmem;
 	int			parentSelection;
 	int			survivalSelection;
 	int			survivalK;
@@ -95,6 +97,8 @@ struct config {
 		{ "runs", cfg_value{ &runs, INT } },
 		{ "evals", cfg_value{ &evals, INT } },
 		{ "p", cfg_value{ &parsimony, FLOAT } },
+		{ "mutation", cfg_value{ &mutation, FLOAT } },
+		{ "rerandmem", cfg_value{ &rerandmem, INT } },
 		{ "parentSelection", cfg_value{ &parentSelection, INT } },
 		{ "survivalSelection", cfg_value{ &survivalSelection, INT } },
 		{ "survivalK", cfg_value{ &survivalK, INT } },

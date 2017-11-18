@@ -35,6 +35,7 @@ int main(int argc, char *argv[]) {
 	// Variables
 	config			cfg;
 	agent*			best;
+	float			average;
 	agent*			parent1 = nullptr;
 	agent*			parent2 = nullptr;
 	agent			global_best;
@@ -43,6 +44,8 @@ int main(int argc, char *argv[]) {
 	int				eval;
 	bool			terminate;
 	std::ofstream	log;
+	std::ofstream	csv;
+	std::ofstream	csv2;
 	std::ofstream	solution;
 
 	// Get configuration
@@ -66,7 +69,7 @@ int main(int argc, char *argv[]) {
 	srand(cfg.seed);
 
 	// Open log file
-	log.open("./log/default.txt");
+	log.open(cfg.logfile);
 	if (!log.is_open()) {
 		std::cout << "Error: Unable to write log file" << std::endl;
 		exit(1);
@@ -75,6 +78,14 @@ int main(int argc, char *argv[]) {
 	log << "\tAgent memory k = " << cfg.memory << std::endl;
 	log << "\tMax tree depth d = " << cfg.depth << std::endl;
 	log << "\tSeed s = " << cfg.seed << std::endl;
+	csv.open(cfg.logfile + ".csv");
+	csv2.open(cfg.logfile + "_best.csv");
+	if (!csv.is_open() || !csv2.is_open()) {
+		std::cout << "Error: Unable to write csv log file(s)" << std::endl;
+		exit(1);
+	}
+	csv << "Run,Evals,Average Fitness,Best Fitness" << std::endl;
+	csv2 << "Run,Population Member,Fitness" << std::endl;
 
 	// Runs
 	for (int run = 0; run < cfg.runs; run++) {
@@ -89,7 +100,7 @@ int main(int argc, char *argv[]) {
 		for (int i = 0; i < cfg.mu; i++) {
 			agent temp(cfg.depth, cfg.memory);
 			temp.randomize(rand() % 2);
-			temp.play_rounds(cfg.rounds);
+			temp.play_rounds(cfg.rounds, cfg.rerandmem);
 			temp.calc_fitness(cfg.parsimony);
 			population.add(temp);
 		}
@@ -121,7 +132,10 @@ int main(int argc, char *argv[]) {
 					break;
 				}
 				agent temp(parent1, parent2);
-				temp.play_rounds(cfg.rounds);
+				if (GEN_RAND_DECIMAL <= cfg.mutation) {
+					temp.mutate(cfg.depth);
+				}
+				temp.play_rounds(cfg.rounds, cfg.rerandmem);
 				temp.calc_fitness(cfg.parsimony);
 				offspring.add(temp);
 				eval++;
@@ -143,11 +157,13 @@ int main(int argc, char *argv[]) {
 
 			// Update local best
 			best = population.get_best();
+			average = population.get_average();
 			if (best->get_fitness() > local_best.get_fitness()) {
 				local_best = *best;
-				log << eval << "\t" << IO_FORMAT_FLOAT(3) << local_best.get_fitness() << std::endl;
-				std::cout << eval << "\t" << IO_FORMAT_FLOAT(3) << population.get_average() << "\t" << IO_FORMAT_FLOAT(4) << local_best.get_fitness() << std::endl;
+				log << eval << "\t" << IO_FORMAT_FLOAT(3) << average << "\t" << IO_FORMAT_FLOAT(3) << local_best.get_fitness() << std::endl;
+				std::cout << eval << "\t" << IO_FORMAT_FLOAT(3) << average << "\t" << IO_FORMAT_FLOAT(4) << local_best.get_fitness() << std::endl;
 			}
+			csv << run + 1 << "," << eval << "," << IO_FORMAT_FLOAT(3) << average << "," << IO_FORMAT_FLOAT(3) << local_best.get_fitness() << std::endl;
 
 			// Run termination test
 			switch (cfg.termTest) {
@@ -164,6 +180,12 @@ int main(int argc, char *argv[]) {
 		// Update global best
 		if (local_best.get_fitness() > global_best.get_fitness()) {
 			global_best = local_best;
+		}
+
+
+		// Log all final fitness values in population for box plot
+		for (int i = 0; i < cfg.mu; i++) {
+			csv2 << run + 1 << "," << i << "," << population.get(i)->get_fitness() << std::endl;
 		}
 
 		population.clear();
