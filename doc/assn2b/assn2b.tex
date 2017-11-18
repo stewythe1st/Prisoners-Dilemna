@@ -38,13 +38,22 @@ The main problem with playing IPD tit-for-tat is that the agent very quickly lea
 
 This fallacy is visible in Figure \ref{fig:default}. Notice how the best run simply approaches 3 (minus the minimal parsimony deduction for have a very small tree). Also notice how useless the boxplot is due to the non-diverse final population. There are only three possible fitness values. The all scored the same but had different parsimony penalties for size 1, 2, or 3 trees.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=6in]{default.png}
 \captionof{figure}{Plot of Best Run }
 \label{fig:default}
 \end{figure}
 
-\section{Analysis vs. Random Search}\label{sect:analysis}
+\section{Analysis vs. Random Search}\label{sect:vs_random}
+
+Figure \ref{fig:stats} shows the statistical analysis for the average final best fitness per run. Keep in mind that the Assn2b (Variable 2) results inclued the parsimony coefficient whereas the Assn2a (Variable 1) are raw average of the payoff. Assn2a saw higher averages as it was occasionally able to get up to a 5 payoff at the end, where Assn2b only ever settled on a 3.  Conversely, though Assn2b got to a 3 (minus parsimony) every single time while Assn2a often couldn't get past a best of 1. These averages prove that the approaches are roughly equal. Assn2b is more stable, but suffers from the restrictions discussed earlier in Section \ref{sect:analysis}.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=3in]{stats.png}
+\captionof{figure}{Statistical Analysis}
+\label{fig:stats}
+\end{figure}
 
 \end{document}

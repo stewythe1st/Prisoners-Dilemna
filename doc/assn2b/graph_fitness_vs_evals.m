@@ -18,7 +18,7 @@ best_run = best_run(1);
 idxs = find(data1(:,1)==best_run);
 best_data = data1(idxs,:);
 
-fig = figure('rend','painters','pos',[100 100 1000 500]); 
+fig = figure('rend','painters','pos',[100 100 1000 400]); 
 
 % Plot data
 subplot(1,2,1);
@@ -39,4 +39,5 @@ title('Distribution of Final Population');
 ylabel('Fitness');
 
 % Save image
-saveas(fig, outputname);
+fig.PaperPositionMode = 'auto';
+print(outputname,'-dpng','-r0')
