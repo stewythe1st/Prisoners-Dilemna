@@ -102,6 +102,7 @@ std::ostream& operator<<(std::ostream& out, const node& n) {
 agent::agent(agent* parent1, agent* parent2) {
 
 	// Variables
+	bool valid = false;
 	int rand_node;
 	tree<node>::iterator cross1;
 	tree<node>::iterator cross2;
@@ -112,21 +113,28 @@ agent::agent(agent* parent1, agent* parent2) {
 	memory = parent1->memory;
 
 	// Choose crossover points
-	rand_node = rand() % gp_tree.size();
-	cross1 = gp_tree.begin();
-	for (int i = 0; i < rand_node; i++) {
-		cross1++;
-	}
-	rand_node = rand() % parent2->gp_tree.size();
-	cross2 = parent2->gp_tree.begin();
-	for (int i = 0; i < rand_node; i++) {
-		cross2++;
+	while (!valid) {
+		rand_node = rand() % gp_tree.size();
+		cross1 = gp_tree.begin();
+		for (int i = 0; i < rand_node; i++) {
+			cross1++;
+		}
+		rand_node = rand() % parent2->gp_tree.size();
+		cross2 = parent2->gp_tree.begin();
+		for (int i = 0; i < rand_node; i++) {
+			cross2++;
+		}
+		if (depth - gp_tree.max_depth(cross1) + parent2->gp_tree.max_depth(cross2) <= depth) {
+			valid = true;
+		}
 	}
 
 	// Delete after cross1 and insert the subtree from cross2
 	gp_tree.erase_children(cross1);	
 	gp_tree.insert_subtree_after(cross1, cross2);
 	gp_tree.erase(cross1);
+
+	assert(gp_tree.max_depth() <= depth);
 
 	return;
 }
@@ -191,15 +199,13 @@ void agent::randomize(bool leaf_before_max) {
 *	the original contents at and below the node.
 *	 @param max_depth maximum depth of the generated subtree
 **********************************************************/
-void agent::mutate(int max_depth) {
+void agent::mutate() {
 
 	// Variables
 	int rand_node;
-	int depth;
 	tree<node>::iterator mutate_pt;
 
 	// Choose a mutation point
-	depth = rand() % max_depth;
 	rand_node = rand() % gp_tree.size();
 	mutate_pt = gp_tree.begin();
 	for (int i = 0; i < rand_node; i++) {
@@ -207,10 +213,12 @@ void agent::mutate(int max_depth) {
 	}
 
 	// Add a new subtree and delete the original one
-	agent temp(max_depth, memory);
+	agent temp(gp_tree.max_depth(mutate_pt), memory);
 	temp.randomize(true);
 	gp_tree.insert_subtree_after(mutate_pt, temp.gp_tree.begin());
 	gp_tree.erase(mutate_pt);
+
+	assert(gp_tree.max_depth() <= depth);
 
 	return;
 }

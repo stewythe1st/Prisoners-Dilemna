@@ -74,10 +74,7 @@ int main(int argc, char *argv[]) {
 		std::cout << "Error: Unable to write log file" << std::endl;
 		exit(1);
 	}
-	log << "Result Log" << std::endl;
-	log << "\tAgent memory k = " << cfg.memory << std::endl;
-	log << "\tMax tree depth d = " << cfg.depth << std::endl;
-	log << "\tSeed s = " << cfg.seed << std::endl;
+	cfg.print(log);
 	csv.open(cfg.logfile + ".csv");
 	csv2.open(cfg.logfile + "_best.csv");
 	if (!csv.is_open() || !csv2.is_open()) {
@@ -133,7 +130,7 @@ int main(int argc, char *argv[]) {
 				}
 				agent temp(parent1, parent2);
 				if (GEN_RAND_DECIMAL <= cfg.mutation) {
-					temp.mutate(cfg.depth);
+					temp.mutate();
 				}
 				temp.play_rounds(cfg.rounds, cfg.rerandmem);
 				temp.calc_fitness(cfg.parsimony);
@@ -160,9 +157,9 @@ int main(int argc, char *argv[]) {
 			average = population.get_average();
 			if (best->get_fitness() > local_best.get_fitness()) {
 				local_best = *best;
-				log << eval << "\t" << IO_FORMAT_FLOAT(3) << average << "\t" << IO_FORMAT_FLOAT(3) << local_best.get_fitness() << std::endl;
-				std::cout << eval << "\t" << IO_FORMAT_FLOAT(3) << average << "\t" << IO_FORMAT_FLOAT(4) << local_best.get_fitness() << std::endl;
 			}
+			log << eval << "\t" << IO_FORMAT_FLOAT(3) << average << "\t" << IO_FORMAT_FLOAT(3) << local_best.get_fitness() << std::endl;
+			std::cout << eval << "\t" << IO_FORMAT_FLOAT(3) << average << "\t" << IO_FORMAT_FLOAT(4) << local_best.get_fitness() << std::endl;
 			csv << run + 1 << "," << eval << "," << IO_FORMAT_FLOAT(3) << average << "," << IO_FORMAT_FLOAT(3) << local_best.get_fitness() << std::endl;
 
 			// Run termination test

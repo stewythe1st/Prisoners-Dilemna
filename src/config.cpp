@@ -77,3 +77,23 @@ bool config::read(std::string filename) {
 	in.close();
 	return true;
 }
+
+
+void config::print(std::ostream& out) {
+	for (std::map<std::string, cfg_value>::iterator it = defs.begin(); it != defs.end(); it++) {
+		out << "\t" << it->first << " = ";
+		switch (it->second.type) {
+		case INT:
+			out << *(int*)it->second.address;
+			break;
+		case FLOAT:
+			out << *(float*)it->second.address;
+			break;
+		case STRING:
+			out << *(std::string*)it->second.address;
+			break;
+		}
+		out << std::endl;
+	}
+	return;
+}

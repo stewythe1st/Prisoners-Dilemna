@@ -114,6 +114,7 @@ struct config {
 
 	// Member Functions
 	bool read(std::string filename);
+	void print(std::ostream& out);
 
 };
 
