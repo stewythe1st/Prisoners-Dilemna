@@ -62,10 +62,12 @@ bool config::read(std::string filename) {
 		
 		value = defs.find(lhs);
 		if (value != defs.end()) {
-			if ((*value).second.type == INT)
-				*(int*)(*value).second.address = atoi(rhs.c_str());
+			if ((*value).second.type == UINT)
+				*(int*)(*value).second.address = std::stoul(rhs.c_str());
+			else if ((*value).second.type == INT)
+				*(int*)(*value).second.address = std::stoi(rhs.c_str());
 			else if ((*value).second.type == FLOAT)
-				*(float*)(*value).second.address = (float)atof(rhs.c_str());
+				*(float*)(*value).second.address = std::stof(rhs.c_str());
 			else if ((*value).second.type == STRING)
 				*(std::string*)(*value).second.address = rhs;
 		}
@@ -81,8 +83,11 @@ bool config::read(std::string filename) {
 
 void config::print(std::ostream& out) {
 	for (std::map<std::string, cfg_value>::iterator it = defs.begin(); it != defs.end(); it++) {
-		out << "\t" << it->first << " = ";
+		out << "\t" << it->first << std::string(18 - it->first.size(), ' ') << " = ";
 		switch (it->second.type) {
+		case UINT:
+			out << *(unsigned int*)it->second.address;
+			break;
 		case INT:
 			out << *(int*)it->second.address;
 			break;

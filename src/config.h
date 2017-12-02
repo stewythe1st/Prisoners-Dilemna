@@ -54,6 +54,7 @@ enum testTestType {
 };
 
 enum dataType {
+	UINT,
 	INT,
 	FLOAT,
 	STRING
@@ -71,7 +72,7 @@ struct cfg_value {
 struct config {
 
 	std::string	srcfile	= DEFAULT_FILE;
-	int			seed;
+	unsigned int seed;
 	int			seedType;
 	int			mu;
 	int			lambda;
@@ -94,7 +95,7 @@ struct config {
 	std::string	solutionfile;
 
 	std::map<std::string, cfg_value> defs = {
-		{ "seed", cfg_value{ &seed, INT } },
+		{ "seed", cfg_value{ &seed, UINT } },
 		{ "seedType", cfg_value{ &seedType, INT } },
 		{ "mu", cfg_value{ &mu, INT } },
 		{ "lambda", cfg_value{ &lambda, INT } },

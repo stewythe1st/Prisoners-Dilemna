@@ -184,6 +184,10 @@ int main(int argc, char *argv[]) {
 
 		}
 
+		// Output final absolute fitness
+		std::cout << std::endl << "Absolute Fitness" << std::endl << local_best.get_fitness() << std::endl;
+		log << std::endl << "Absolute Fitness" << std::endl << local_best.get_fitness() << std::endl;
+
 		// Update global best
 		if (local_best.get_comp_fitness() > global_best.get_comp_fitness()) {
 			global_best = local_best;
