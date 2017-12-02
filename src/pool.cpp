@@ -90,8 +90,10 @@ static inline bool agentCompare(agent a, agent b) { return a.get_comp_fitness() 
 void pool::calc_os() {
 
 	// Variables
-	int i = 0;
-	float top_pct;
+	int		i = 0;
+	float	top_pct;
+	float	totalFitness;
+	float	lastProbability;
 
 	os[0].clear();
 	os[1].clear();
@@ -117,6 +119,26 @@ void pool::calc_os() {
 		i++;
 	}
 
+	// If I'm understanding Koza right, then selection inside tiers is
+	// fitness proportional, not stochastic
+	// https://books.google.com/books?id=Bhtxo60BV0EC&lpg=PA604&ots=9qbPetg-RN&pg=PA99
+	for (int i = 0; i < 2; i++) {
+		os_fp[i].clear();
+
+		// Get the sum of fitness values
+		totalFitness = 0;
+		for (std::vector<agent*>::iterator it = os[i].begin(); it != os[i].end(); it++) {
+			totalFitness += (*it)->get_comp_fitness();
+		}
+
+		// Build up FP vector
+		lastProbability = 0.0f;
+		for (std::vector<agent*>::iterator it = os[i].begin(); it != os[i].end(); it++) {
+			os_fp[i].push_back(((*it)->get_comp_fitness() / totalFitness) + lastProbability);
+			lastProbability = os_fp[i].back();
+		}
+	}
+
 	return;
 }
 
@@ -129,16 +151,24 @@ void pool::calc_os() {
 agent* pool::choose_parent_os() {
 
 	// Choose a group
-	int		rand_val = rand() % 10;
+	int		tier = rand() % 10;
+	float	rand_val = GEN_RAND_DECIMAL;
 	agent*	rtn;
+	size_t	i = 0;
 
-	if (rand_val < 8) {
-		rand_val = rand() % os[0].size();
-		rtn = os[0][rand_val];
+	// Select from top tier 80% of the time
+	// Inner tier selection is fitness proportional
+	if (tier < 8) {
+		while (os_fp[0][i] < rand_val && i < os_fp[0].size() - 1) {
+			i++;
+		}
+		rtn = os[0][i];
 	}
 	else {
-		rand_val = rand() % os[1].size();
-		rtn = os[1][rand_val];
+		while (os_fp[1][i] < rand_val && i < os_fp[1].size() - 1) {
+			i++;
+		}
+		rtn = os[1][i];
 	}
 
 	return rtn;

@@ -51,6 +51,7 @@ private:
 	std::vector<agent>	agents;
 	std::vector<float>	fp;
 	std::vector<agent*>	os[2];
+	std::vector<float>	os_fp[2];
 	int					gens_unchanged = 0;
 	float				last_best = FLT_MIN;
 
