@@ -60,6 +60,10 @@ int main(int argc, char *argv[]) {
 		std::cout << "Error: Configuration constraint violated (l >= 3k)";
 		exit(1);
 	}
+	if (cfg.survivalStrat == SURVIVALSTRAT_COMMA && cfg.mu > cfg.lambda ) {
+		std::cout << "Error: For comma (generational) survival, mu cannot be greater than lambda";
+		exit(1);
+	}
 	
 	// Seed random number generator
 	if (cfg.seedType == SEED_TIME_BASED) {
@@ -136,6 +140,11 @@ int main(int argc, char *argv[]) {
 				temp.calc_fitness(cfg.parsimony);
 				offspring.add(temp);
 				eval++;
+			}
+
+			// If comma survival, remove parents from population first
+			if (cfg.survivalStrat == SURVIVALSTRAT_COMMA) {
+				population.empty();
 			}
 
 			// Add offspring to population

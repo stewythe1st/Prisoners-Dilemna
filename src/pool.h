@@ -52,7 +52,7 @@ private:
 	std::vector<float>	fp;
 	std::vector<agent*>	os[2];
 	int					gens_unchanged = 0;
-	float				last_best;
+	float				last_best = FLT_MIN;
 
 	// Private Member Functions
 	int k_tourn(int k, bool best, bool replacement);
@@ -64,6 +64,7 @@ public:
 	~pool() {};
 
 	// Member Functions
+	void empty();
 	void calc_fp();
 	agent* choose_parent_fp();
 	void calc_os();

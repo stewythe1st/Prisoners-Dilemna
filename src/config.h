@@ -33,6 +33,11 @@ enum seedType {
 	SEED_TIME_BASED
 };
 
+enum survivalStratType {
+	SURVIVALSTRAT_COMMA,
+	SURVIVALSTRAT_PLUS
+};
+
 enum parentSelType {
 	PARENT_FP,
 	PARENT_OS
@@ -75,6 +80,7 @@ struct config {
 	int			rounds;
 	int			runs;
 	int			evals;
+	int			survivalStrat;
 	float		parsimony;
 	float		mutation;
 	int			rerandmem;
@@ -97,6 +103,7 @@ struct config {
 		{ "k", cfg_value{ &memory, INT } },
 		{ "runs", cfg_value{ &runs, INT } },
 		{ "evals", cfg_value{ &evals, INT } },
+		{ "survivalStrat", cfg_value{ &survivalStrat, INT } },
 		{ "p", cfg_value{ &parsimony, FLOAT } },
 		{ "mutation", cfg_value{ &mutation, FLOAT } },
 		{ "rerandmem", cfg_value{ &rerandmem, INT } },

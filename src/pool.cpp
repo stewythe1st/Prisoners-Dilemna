@@ -19,6 +19,16 @@
 
 
 /**********************************************************
+*	empty()
+*	Empties the pool.
+**********************************************************/
+void pool::empty() {
+	agents.clear();
+	return;
+}
+
+
+/**********************************************************
 *	pool::calc_fp()
 *	Updates the fitness proportional vector. Each element
 *	holds a ordered slice of (0.0-1.0) with width eqaul to
