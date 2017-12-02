@@ -28,14 +28,27 @@
 
 
 /**********************************************************
+*	Functions
+**********************************************************/
+extern "C" int __stdcall IsDebuggerPresent(void);
+
+
+/**********************************************************
 *	Main Function
 **********************************************************/
 int main(int argc, char *argv[]) {
 
+	// Force Visual Studio to pause on debug exit
+	if (IsDebuggerPresent()) {
+		atexit([] {system("PAUSE"); });
+	}
+
 	// Variables
 	config			cfg;
 	agent*			best;
+	agent*			abs_best;
 	float			average;
+	float			abs_average;
 	agent*			parent1 = nullptr;
 	agent*			parent2 = nullptr;
 	agent			global_best;
@@ -57,11 +70,11 @@ int main(int argc, char *argv[]) {
 
 	// Check for incalid configuration
 	if (cfg.rounds < cfg.memory * 3) {
-		std::cout << "Error: Configuration constraint violated (l >= 3k)";
+		std::cout << "Error: Configuration constraint violated (l >= 3k)" << std::endl;
 		exit(1);
 	}
 	if (cfg.survivalStrat == SURVIVALSTRAT_COMMA && cfg.mu > cfg.lambda ) {
-		std::cout << "Error: For comma (generational) survival, mu cannot be greater than lambda";
+		std::cout << "Error: For comma (generational) survival, mu cannot be greater than lambda" << std::endl;
 		exit(1);
 	}
 	
@@ -79,14 +92,14 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 	cfg.print(log);
-	csv.open(cfg.logfile + ".csv");
-	csv2.open(cfg.logfile + "_best.csv");
+	csv.open(cfg.logfile.substr(0, cfg.logfile.size() - 4) + ".csv");
+	csv2.open(cfg.logfile.substr(0, cfg.logfile.size()-4) + "_best.csv");
 	if (!csv.is_open() || !csv2.is_open()) {
 		std::cout << "Error: Unable to write csv log file(s)" << std::endl;
 		exit(1);
 	}
-	csv << "Run,Evals,Average Fitness,Best Fitness" << std::endl;
-	csv2 << "Run,Population Member,Fitness" << std::endl;
+	csv << "Run,Evals,Average Composite Fitness,Best Composite Fitness,Average Absolute Fitness, Best Absolute Fitness" << std::endl;
+	csv2 << "Run,Population Member,Composite Fitness, Absolute Fitness" << std::endl;
 
 	// Runs
 	for (int run = 0; run < cfg.runs; run++) {
@@ -163,14 +176,16 @@ int main(int argc, char *argv[]) {
 			}			
 
 			// Update local best
-			best = population.get_best();
-			average = population.get_average();
+			best = population.get_comp_best();
+			abs_best = population.get_best();
+			average = population.get_comp_average();
+			abs_average = population.get_average();
 			if (best->get_comp_fitness() > local_best.get_comp_fitness()) {
 				local_best = *best;
 			}
 			log << eval << "\t" << IO_FORMAT_FLOAT(3) << average << "\t" << IO_FORMAT_FLOAT(3) << local_best.get_comp_fitness() << std::endl;
 			std::cout << eval << "\t" << IO_FORMAT_FLOAT(3) << average << "\t" << IO_FORMAT_FLOAT(4) << local_best.get_comp_fitness() << std::endl;
-			csv << run + 1 << "," << eval << "," << IO_FORMAT_FLOAT(3) << average << "," << IO_FORMAT_FLOAT(3) << local_best.get_comp_fitness() << std::endl;
+			csv << run + 1 << "," << eval << "," << IO_FORMAT_FLOAT(3) << average << "," << IO_FORMAT_FLOAT(3) << local_best.get_comp_fitness() << "," << IO_FORMAT_FLOAT(3) << abs_average << "," << IO_FORMAT_FLOAT(3) << abs_best->get_fitness() << std::endl;
 
 			// Run termination test
 			switch (cfg.termTest) {
@@ -196,7 +211,7 @@ int main(int argc, char *argv[]) {
 
 		// Log all final fitness values in population for box plot
 		for (int i = 0; i < cfg.mu; i++) {
-			csv2 << run + 1 << "," << i << "," << population.get(i)->get_comp_fitness() << std::endl;
+			csv2 << run + 1 << "," << i << "," << population.get(i)->get_comp_fitness() << "," << population.get(i)->get_fitness() << std::endl;
 		}
 
 		population.clear();

@@ -75,7 +75,9 @@ public:
 	void copy_from(pool* p);
 	inline void clear() { agents.clear(); };
 	agent* get_best();
+	agent* get_comp_best();
 	float get_average();
+	float get_comp_average();
 	bool term_test_best_unchanged(int target);
 
 	// Accessors & Mutators

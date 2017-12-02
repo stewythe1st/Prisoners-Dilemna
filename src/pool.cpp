@@ -346,6 +346,27 @@ agent* pool::get_best() {
 	std::vector<agent>::iterator highest = agents.begin();
 
 	for (std::vector<agent>::iterator it = agents.begin(); it != agents.end(); it++) {
+		if ((*it).get_fitness() > (*highest).get_fitness()) {
+			highest = it;
+		}
+	}
+
+	return &(*highest);
+}
+
+
+/**********************************************************
+*	pool::get_comp_best()
+*	Finds the best (highest composite coevolutionary fitness)
+*	agent in the pool.
+*	 @return pointer to the best agent
+**********************************************************/
+agent* pool::get_comp_best() {
+
+	// Variables
+	std::vector<agent>::iterator highest = agents.begin();
+
+	for (std::vector<agent>::iterator it = agents.begin(); it != agents.end(); it++) {
 		if ((*it).get_comp_fitness() > (*highest).get_comp_fitness()) {
 			highest = it;
 		}
@@ -366,6 +387,26 @@ float pool::get_average() {
 	// Variables
 	float	total = 0.0f;
 	
+	// Calculate total
+	for (std::vector<agent>::iterator it = agents.begin(); it != agents.end(); it++) {
+		total += (*it).get_fitness();
+	}
+
+	return total / (float)agents.size();
+}
+
+
+/**********************************************************
+*	pool::get_comp_average()
+*	Calculates and returns the composite coevolutionary
+	average fitness of all agents in the pool.
+*	 @return average value of all agents in the pool
+**********************************************************/
+float pool::get_comp_average() {
+
+	// Variables
+	float	total = 0.0f;
+
 	// Calculate total
 	for (std::vector<agent>::iterator it = agents.begin(); it != agents.end(); it++) {
 		total += (*it).get_comp_fitness();
