@@ -68,6 +68,7 @@ public:
 	agent* choose_parent_fp();
 	void calc_os();
 	agent* choose_parent_os();
+	void calc_comp_fitnesses(int opponents);
 	void reduce_by_truncation(int size);
 	void reduce_by_k_tourn(size_t size, int k);
 	void copy_from(pool* p);

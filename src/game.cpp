@@ -237,6 +237,7 @@ agent& agent::operator= (const agent& rhs) {
 	memory = rhs.memory;
 	payoff = rhs.payoff;
 	fitness = rhs.fitness;
+	comp_fitness = rhs.comp_fitness;
 	rounds_played = rhs.rounds_played;
 	return *this;
 }

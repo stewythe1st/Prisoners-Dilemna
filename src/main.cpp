@@ -141,6 +141,7 @@ int main(int argc, char *argv[]) {
 			// Add offspring to population
 			population.copy_from(&offspring);
 			offspring.clear();
+			population.calc_comp_fitnesses(cfg.coevSamp);
 
 			// Reduce population
 			switch (cfg.survivalSelection) {
@@ -155,12 +156,12 @@ int main(int argc, char *argv[]) {
 			// Update local best
 			best = population.get_best();
 			average = population.get_average();
-			if (best->get_fitness() > local_best.get_fitness()) {
+			if (best->get_comp_fitness() > local_best.get_comp_fitness()) {
 				local_best = *best;
 			}
-			log << eval << "\t" << IO_FORMAT_FLOAT(3) << average << "\t" << IO_FORMAT_FLOAT(3) << local_best.get_fitness() << std::endl;
-			std::cout << eval << "\t" << IO_FORMAT_FLOAT(3) << average << "\t" << IO_FORMAT_FLOAT(4) << local_best.get_fitness() << std::endl;
-			csv << run + 1 << "," << eval << "," << IO_FORMAT_FLOAT(3) << average << "," << IO_FORMAT_FLOAT(3) << local_best.get_fitness() << std::endl;
+			log << eval << "\t" << IO_FORMAT_FLOAT(3) << average << "\t" << IO_FORMAT_FLOAT(3) << local_best.get_comp_fitness() << std::endl;
+			std::cout << eval << "\t" << IO_FORMAT_FLOAT(3) << average << "\t" << IO_FORMAT_FLOAT(4) << local_best.get_comp_fitness() << std::endl;
+			csv << run + 1 << "," << eval << "," << IO_FORMAT_FLOAT(3) << average << "," << IO_FORMAT_FLOAT(3) << local_best.get_comp_fitness() << std::endl;
 
 			// Run termination test
 			switch (cfg.termTest) {
@@ -175,14 +176,14 @@ int main(int argc, char *argv[]) {
 		}
 
 		// Update global best
-		if (local_best.get_fitness() > global_best.get_fitness()) {
+		if (local_best.get_comp_fitness() > global_best.get_comp_fitness()) {
 			global_best = local_best;
 		}
 
 
 		// Log all final fitness values in population for box plot
 		for (int i = 0; i < cfg.mu; i++) {
-			csv2 << run + 1 << "," << i << "," << population.get(i)->get_fitness() << std::endl;
+			csv2 << run + 1 << "," << i << "," << population.get(i)->get_comp_fitness() << std::endl;
 		}
 
 		population.clear();

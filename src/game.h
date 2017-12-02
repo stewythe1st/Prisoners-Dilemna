@@ -85,6 +85,7 @@ private:
 	int payoff = 0;
 	int rounds_played = 0;
 	float fitness = FLT_MIN;
+	float comp_fitness = FLT_MIN;
 
 	// Private member functions
 	void add_random_children(tree<node>::iterator parent, int children, int depth, bool leaf_before_max);
@@ -111,6 +112,8 @@ public:
 	// Accessors & Mutators
 	inline void add_payoff(int p) { payoff += p; };
 	inline float get_fitness() { return fitness; };
+	inline void set_comp_fitness(float f) { comp_fitness = f; };
+	inline float get_comp_fitness() { return comp_fitness; };
 	
 };
 

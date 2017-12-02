@@ -35,14 +35,14 @@ void pool::calc_fp() {
 	// Get the sum of fitness values
 	totalFitness = 0;
 	for (std::vector<agent>::iterator it = agents.begin(); it != agents.end(); ++it) {
-		totalFitness += (*it).get_fitness();
+		totalFitness += (*it).get_comp_fitness();
 	}
 
 	// Build up FP vector
 	lastProbability = 0.0f;
 	fp.clear();
 	for (std::vector<agent>::iterator it = agents.begin(); it != agents.end(); ++it) {
-		fp.push_back(((*it).get_fitness() / totalFitness) + lastProbability);
+		fp.push_back(((*it).get_comp_fitness() / totalFitness) + lastProbability);
 		lastProbability = fp.back();
 	}
 
@@ -76,7 +76,7 @@ agent* pool::choose_parent_fp() {
 *	two vectors containing pointers to the top proportion
 *	and the bottom proportion, respectively.
 **********************************************************/
-static inline bool agentCompare(agent a, agent b) { return a.get_fitness() > b.get_fitness(); };
+static inline bool agentCompare(agent a, agent b) { return a.get_comp_fitness() > b.get_comp_fitness(); };
 void pool::calc_os() {
 
 	// Variables
@@ -136,6 +136,57 @@ agent* pool::choose_parent_os() {
 
 
 /**********************************************************
+*	pool::calc_comp_fitnesses()
+*	Calculates each member's competitive fitness by averaging
+*	against a random sampling of its opponents.
+*	 @param opponents number of opponents to average against
+**********************************************************/
+void pool::calc_comp_fitnesses(int opponents) {
+
+	// Variables
+	int					num_agents;
+	float				avg;
+	int*				opp_idxs;
+
+	// Sanity check
+	num_agents = (int)agents.size();
+	if (opponents > (num_agents - 1)) {
+		opponents = num_agents - 1;
+	}
+
+	opp_idxs = new int[opponents];
+	for (size_t i = 0; i < agents.size(); i++) {
+
+		// Choose sample of unique opponents (no replacement)
+		for (int j = 0; j < opponents; j++) {
+			opp_idxs[j] = rand() % num_agents;
+			if (opp_idxs[j] == i) {
+				j--;
+				continue;
+			}
+			for (int k = 0; k < j; k++) {
+				if (opp_idxs[j] == opp_idxs[k]) {
+					j--;
+					break;
+				}
+			}
+		}
+
+		// Calculate opponents' average fitness
+		avg = agents[i].get_fitness();
+		for (int j = 0; j < opponents; j++) {
+			avg += agents[opp_idxs[j]].get_fitness();
+		}
+		avg /= opponents + 1;
+		agents[i].set_comp_fitness(avg);
+	}
+
+	delete[] opp_idxs;
+	return;
+}
+
+
+/**********************************************************
 *	k_tourn(int k, int type)
 *	Randomly picks k agents and returns the index of the
 *	agent with either the highest or lowest fitness bassed
@@ -169,9 +220,9 @@ int pool::k_tourn(int k, bool highest, bool replacement) {
 	// Run tournament, looking for best or worst fitness	
 	bestIdx = tournament[0];
 	for (int i = 1; i < k; i++) {
-		if (!highest && agents[tournament[i]].get_fitness() > agents[bestIdx].get_fitness())
+		if (!highest && agents[tournament[i]].get_comp_fitness() > agents[bestIdx].get_comp_fitness())
 			bestIdx = tournament[i];
-		else if (highest && agents[tournament[i]].get_fitness() < agents[bestIdx].get_fitness())
+		else if (highest && agents[tournament[i]].get_comp_fitness() < agents[bestIdx].get_comp_fitness())
 			bestIdx = tournament[i];
 	}
 
@@ -229,7 +280,7 @@ void pool::reduce_by_truncation(int size) {
 
 		// Find element with lowest fitness and remove it
 		for (std::vector<agent>::iterator it = agents.begin(); it != agents.end(); it++) {
-			if ((*it).get_fitness() < (*lowest).get_fitness()) {
+			if ((*it).get_comp_fitness() < (*lowest).get_comp_fitness()) {
 				lowest = it;
 			}
 		}
@@ -248,7 +299,7 @@ void pool::reduce_by_truncation(int size) {
 *	 @return boolean for termination
 **********************************************************/
 bool pool::term_test_best_unchanged(int target) {
-	float best = get_best()->get_fitness();
+	float best = get_best()->get_comp_fitness();
 	if (last_best == best) {
 		gens_unchanged++;
 	}
@@ -285,7 +336,7 @@ agent* pool::get_best() {
 	std::vector<agent>::iterator highest = agents.begin();
 
 	for (std::vector<agent>::iterator it = agents.begin(); it != agents.end(); it++) {
-		if ((*it).get_fitness() > (*highest).get_fitness()) {
+		if ((*it).get_comp_fitness() > (*highest).get_comp_fitness()) {
 			highest = it;
 		}
 	}
@@ -307,7 +358,7 @@ float pool::get_average() {
 	
 	// Calculate total
 	for (std::vector<agent>::iterator it = agents.begin(); it != agents.end(); it++) {
-		total += (*it).get_fitness();
+		total += (*it).get_comp_fitness();
 	}
 
 	return total / (float)agents.size();
