@@ -1,1 +1,1 @@
-OR OR O5 O2 NOT P3 
+OR OR O2 P4 O3 
