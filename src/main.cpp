@@ -30,7 +30,9 @@
 /**********************************************************
 *	Functions
 **********************************************************/
+#ifdef _WIN32
 extern "C" int __stdcall IsDebuggerPresent(void);
+#endif
 
 
 /**********************************************************
@@ -39,9 +41,11 @@ extern "C" int __stdcall IsDebuggerPresent(void);
 int main(int argc, char *argv[]) {
 
 	// Force Visual Studio to pause on debug exit
+	#ifdef _WIN32
 	if (IsDebuggerPresent()) {
 		atexit([] {system("PAUSE"); });
 	}
+	#endif
 
 	// Variables
 	config			cfg;
